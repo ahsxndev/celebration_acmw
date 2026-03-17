@@ -1,18 +1,110 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../core/theme.dart';
+import '../widgets/animated_poster.dart';
 import '../widgets/global_footer.dart';
 import '../widgets/shared_components.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+  Timer? _timer;
+
+  final List<String> _sliderImages = [
+    "assets/images/hero_2.jpeg",
+    "assets/images/hero_3.jpeg",
+    "assets/images/hero_4.jpeg",
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      if (_currentPage < _sliderImages.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   Future<void> _launchRegistrationForm() async {
     final Uri url = Uri.parse('https://forms.gle/JGSNx1k6qg2APABa7');
     if (!await launchUrl(url)) {
       debugPrint('Could not launch $url');
     }
+  }
+
+  Future<void> _launchCompetitionForm() async {
+    final Uri url = Uri.parse('https://forms.gle/17PfPZ2yYiud3r2X9');
+    if (!await launchUrl(url)) {
+      debugPrint('Could not launch competition link');
+    }
+  }
+
+  // Helper method to show the poster in a popup dialog
+  void _showPosterPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(20),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.center,
+            children: [
+              // The zoomed-in poster
+              InteractiveViewer(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    "assets/images/competition_poster.png",
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              // Close Button
+              Positioned(
+                top: -15,
+                right: -15,
+                child: FloatingActionButton(
+                  mini: true,
+                  backgroundColor: AppTheme.accentMagenta,
+                  elevation: 5,
+                  onPressed: () => Navigator.pop(context),
+                  child: const Icon(Icons.close, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -34,118 +126,263 @@ class HomePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // ==========================================
-          // 1. HERO SECTION (Perfectly Centered!)
+          // 1. HERO SECTION WITH SLIDER
+          // ==========================================
+          Stack(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: isMobile ? 550 : (isTablet ? 600 : 650),
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (index) => setState(() => _currentPage = index),
+                  itemCount: _sliderImages.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(_sliderImages[index]),
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        AppTheme.primaryPurple.withOpacity(0.3),
+                        AppTheme.primaryPurple.withOpacity(0.85),
+                        AppTheme.primaryPurple,
+                      ],
+                      stops: const [0.0, 0.6, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "ACM-W Celebrations",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isMobile ? 32 : (isTablet ? 44 : 56),
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.white,
+                          height: 1.1,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "RCET Celebrations of Women in Computing (RCETCWIC):\nAn ACM Celebration",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isMobile ? 13 : (isTablet ? 16 : 18),
+                          color: Colors.white.withOpacity(0.85),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isMobile ? 20 : 32,
+                          vertical: isMobile ? 12 : 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.5),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Text(
+                          "April 29-30",
+                          style: TextStyle(
+                            color: AppTheme.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isMobile ? 16 : 24,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton(
+                        onPressed: _launchRegistrationForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.accentMagenta,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 32 : 48,
+                            vertical: isMobile ? 16 : 20,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          "Join the Celebration",
+                          style: TextStyle(
+                            fontSize: isMobile ? 16 : 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 10,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 30),
+                    onPressed: () {
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.ease,
+                      );
+                    },
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 10,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 30),
+                    onPressed: () {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.ease,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // ==========================================
+          // 2. NEW: EVENT INTRODUCTION (TEXT BG FIXED)
           // ==========================================
           Container(
             width: double.infinity,
-            height: isMobile ? 550 : (isTablet ? 600 : 650),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/women_tech.png"),
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-              ),
+            color: AppTheme.white, // White background for the section
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: 80,
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppTheme.primaryPurple.withOpacity(0.3),
-                    AppTheme.primaryPurple.withOpacity(0.85),
-                    AppTheme.primaryPurple,
-                  ],
-                  stops: const [0.0, 0.6, 1.0],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SectionHeader(
+                  title: "Welcome to RCETCWIC 2026",
                 ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(
-                  left: horizontalPadding,
-                  right: horizontalPadding,
-                  top: 80,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(height: 40),
+
+                Flex(
+                  direction: isDesktop ? Axis.horizontal : Axis.vertical,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "ACM-W Celebrations",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: isMobile ? 32 : (isTablet ? 44 : 56),
-                        fontWeight: FontWeight.w900,
-                        color: AppTheme.white,
-                        height: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // UPDATED TITLE from document
-                    Text(
-                      "RCET Celebrations of Women in Computing (RCETWIC):\nAn ACM Celebration",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: isMobile ? 13 : (isTablet ? 16 : 18),
-                        color: Colors.white.withOpacity(0.85),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // UPDATED DATES
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile ? 20 : 32,
-                        vertical: isMobile ? 12 : 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.5),
-                          width: 1.5,
+                    // LEFT SIDE: IMAGE
+                    Expanded(
+                      flex: isDesktop ? 5 : 0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryPurple.withOpacity(0.1),
+                              blurRadius: 30,
+                              offset: const Offset(0, 15),
+                            ),
+                          ],
                         ),
-                      ),
-                      child: Text(
-                        "April 29-30",
-                        style: TextStyle(
-                          color: AppTheme.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: isMobile ? 16 : 24,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            "assets/images/about_2.png",
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 32),
+                    if (isDesktop) const SizedBox(width: 40) else const SizedBox(height: 40),
 
-                    ElevatedButton(
-                      onPressed: _launchRegistrationForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accentMagenta,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isMobile ? 32 : 48,
-                          vertical: isMobile ? 16 : 20,
+                    // RIGHT SIDE: TEXT (Now inside a light background box)
+                    Expanded(
+                      flex: isDesktop ? 7 : 0,
+                      child: Container(
+                        padding: EdgeInsets.all(isMobile ? 24 : 40),
+                        decoration: BoxDecoration(
+                          color: AppTheme.lightLavender.withOpacity(0.15), // Light Color Background
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppTheme.primaryPurple.withOpacity(0.05)),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: Text(
-                        "Join the Celebration",
-                        style: TextStyle(
-                          fontSize: isMobile ? 16 : 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                        child: Text.rich(
+                          TextSpan(
+                            style: TextStyle(
+                              fontSize: isMobile ? 15 : 16,
+                              height: 1.8,
+                              color: AppTheme.textDark.withOpacity(0.85),
+                            ),
+                            children: const [
+                              TextSpan(text: "The "),
+                              TextSpan(
+                                text: "ACM-W Celebrations of Women in Computing (RCETCWIC 2026) ",
+                                style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryPurple),
+                              ),
+                              TextSpan(
+                                  text: "is designed to provide an empowering and immersive experience for students, professionals, and tech enthusiasts interested in the ever-evolving field of computing.\n\n"
+                              ),
+                              TextSpan(
+                                  text: "The event will feature a series of inspiring keynote talks, hands-on technical workshops, and interactive panel discussions, covering key topics such as "
+                              ),
+                              TextSpan(
+                                text: "Artificial Intelligence, Cybersecurity, Smart Energy Systems, and Women in Tech Leadership",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(
+                                  text: ". Participants will gain both theoretical insights and practical skills, enabling them to innovate and lead in the modern tech industry.\n\n"
+                              ),
+                              TextSpan(text: "This year, "),
+                              TextSpan(
+                                text: "RCETCWIC 2026 ",
+                                style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryPurple),
+                              ),
+                              TextSpan(
+                                  text: "will offer attendees the opportunity to network with industry experts, collaborate with peers, and explore real-world applications of emerging technologies while actively fostering diversity, equity, and inclusion in computing."
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.left,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
 
           // ==========================================
-          // 2. ABOUT SNIPPET SECTION
+          // 3. ABOUT SNIPPET SECTION (UNCHANGED)
           // ==========================================
           Container(
             color: AppTheme.primaryPurple,
@@ -163,7 +400,7 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "About\nOur Mission",
+                        "Our Mission",
                         style: TextStyle(
                           fontSize: isMobile ? 24 : (isTablet ? 30 : 36),
                           fontWeight: FontWeight.bold,
@@ -210,15 +447,12 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 40),
                 Expanded(
                   flex: isDesktop ? 1 : 0,
-                  child: Container(
-                    height: 250,
-                    decoration: BoxDecoration(
-                      color: AppTheme.lightLavender,
-                      borderRadius: BorderRadius.circular(24),
-                      image: const DecorationImage(
-                        image: AssetImage("assets/images/about_mission.png"),
-                        fit: BoxFit.contain,
-                      ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      "assets/images/about_mission.png",
+                      width: double.infinity,
+                      fit: BoxFit.fitWidth,
                     ),
                   ),
                 ),
@@ -227,72 +461,78 @@ class HomePage extends StatelessWidget {
           ),
 
           // ==========================================
-          // 3. FEATURED SPEAKERS (UPDATED TO ACTUAL SPEAKERS)
+          // 4. FEATURED SPEAKERS
           // ==========================================
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              horizontal: horizontalPadding,
-              vertical: 80,
-            ),
-            decoration: BoxDecoration(
-              color: AppTheme.lightLavender.withOpacity(0.5),
-            ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80),
             child: Column(
               children: [
                 const SectionHeader(
                   title: "Featured Speakers",
                   subtitle: "Hear from industry leaders and tech pioneers.",
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: isMobile ? 20 : 40),
+
                 Wrap(
                   spacing: isMobile ? mobileSpacing : 24,
-                  runSpacing: 24,
+                  runSpacing: isMobile ? 20 : 24,
                   alignment: WrapAlignment.center,
                   children: [
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: speakerCardWidth,
                       card: const UniversalProfileCard(
                         name: "Dr. Kashif Shahzad",
-                        role: "Board of Directors, PITC",
+                        role: "CEO, Power Information Technology Company (PITC), Lahore, Pakistan",
                         imageUrl: "assets/images/persons/kashif.png",
-                        tagText: "Keynote",
+                        profileUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
+                        tagText: "Keynote Speaker",
                         tagColor: AppTheme.accentMagenta,
+                        size: CardSize.small,
                       ),
                     ),
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: speakerCardWidth,
                       card: UniversalProfileCard(
                         name: "Dr. Sidra Zafar",
-                        role: "Head of CS, Kinnaird College",
+                        role: "Head of Computer Science, Kinnaird College, Lahore, Pakistan",
                         imageUrl: "assets/images/persons/sidra.jpeg",
-                        tagText: "Workshop",
+                        profileUrl: "https://www.linkedin.com/in/sidra-zafar?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+                        tagText: "Workshop Lead",
                         tagColor: Colors.teal.shade600,
+                        size: CardSize.small,
                       ),
                     ),
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: speakerCardWidth,
                       card: const UniversalProfileCard(
                         name: "Dr. M. Ahmad Raza",
-                        role: "Asst. Professor, FAST",
+                        role: "FAST NUCES, Lahore, Pakistan",
                         imageUrl: "assets/images/persons/ahmad.jpeg",
+                        profileUrl: "https://www.linkedin.com/in/muhammad-ahmad-raza-phd-b0949310?utm_source=share_via&utm_content=profile&utm_medium=member_android",
                         tagText: "Panelist",
                         tagColor: AppTheme.primaryPurple,
+                        size: CardSize.small,
                       ),
                     ),
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: speakerCardWidth,
                       card: UniversalProfileCard(
                         name: "Mr. Usman Nazir",
-                        role: "Theta Solutions",
+                        role: "CEO, Theta Solutions, Sialkot, Pakistan",
                         imageUrl: "assets/images/persons/usman.jpg",
-                        tagText: "Workshop",
+                        profileUrl: "https://thetasolutions.pk/our-core-team/",
+                        tagText: "Workshop Lead",
                         tagColor: Colors.teal.shade600,
+                        size: CardSize.small,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: isMobile ? 30 : 40),
                 ElevatedButton(
                   onPressed: () => context.go('/speakers'),
                   style: ElevatedButton.styleFrom(
@@ -315,9 +555,156 @@ class HomePage extends StatelessWidget {
           ),
 
           // ==========================================
-          // 4. EVENT TIMELINE TEASER
+          // 5. POSTER DESIGN COMPETITION (LAYOUT & RESPONSIVENESS FIXED)
           // ==========================================
-          Padding(
+          Container(
+            color: AppTheme.lightLavender.withOpacity(0.15), // Very light distinction background
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: isMobile ? 40 : 80,
+            ),
+            child: Column(
+              children: [
+                const SectionHeader(
+                  title: "Poster Design Competition",
+                  subtitle: "Showcase your creativity, win exciting prizes, and explore AI topics!",
+                ),
+                SizedBox(height: isMobile ? 30 : 60),
+
+                Flex(
+                  direction: isDesktop ? Axis.horizontal : Axis.vertical,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // LEFT SIDE: TEXT AND BUTTON
+                    Expanded(
+                      flex: isDesktop ? 6 : 0,
+                      child: Column(
+                        crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Are you ready to showcase your innovative ideas?",
+                            textAlign: isMobile ? TextAlign.center : TextAlign.left,
+                            style: TextStyle(
+                              fontSize: isMobile ? 20 : 28,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryPurple,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Join the RCETCWIC 2026 Poster Design Competition! This is your chance to present your research, projects, and creative concepts in Artificial Intelligence, Cybersecurity, and Smart Energy.\n\nTop submissions will be recognized with exciting prizes and featured during the main celebration event. Don't miss this opportunity to stand out!",
+                            textAlign: isMobile ? TextAlign.center : TextAlign.left,
+                            style: TextStyle(
+                              fontSize: isMobile ? 15 : 17,
+                              height: 1.6,
+                              color: AppTheme.textDark.withOpacity(0.85),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          ElevatedButton.icon(
+                            onPressed: _launchCompetitionForm,
+                            icon: const Icon(Icons.app_registration, color: Colors.white),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.accentMagenta,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isMobile ? 32 : 40,
+                                vertical: isMobile ? 16 : 20,
+                              ),
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            label: Text(
+                              "Register & Submit",
+                              style: TextStyle(
+                                fontSize: isMobile ? 16 : 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    if (isDesktop) const SizedBox(width: 60) else const SizedBox(height: 50),
+
+                    // RIGHT SIDE: CLICKABLE POSTER
+                    Expanded(
+                      flex: isDesktop ? 5 : 0, // Adjusted flex to balance the layout
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () => _showPosterPopup(context),
+                          child: Padding(
+                            // FIX: This padding acts as a "safe zone" so the glowing/pulsing animation doesn't get clipped!
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.none,
+                              children: [
+                                Container(
+                                  // FIX: Added maxHeight to prevent aspect ratio stretching on weird screen sizes
+                                  constraints: BoxConstraints(
+                                    maxWidth: isMobile ? 280 : 380,
+                                    maxHeight: isMobile ? 400 : 550,
+                                  ),
+                                  child: const PulsingPoster(
+                                    imagePath: "assets/images/competition_poster.png",
+                                  ),
+                                ),
+                                // Floating "Tap to Enlarge" hint - FIX: Moved INSIDE the visible bounds
+                                Positioned(
+                                  bottom: 20, // Moved up to hover elegantly over the bottom of the image
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryPurple.withOpacity(0.95), // Slight transparency
+                                      borderRadius: BorderRadius.circular(30),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 15,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                      border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.zoom_in_map_rounded, color: Colors.white, size: 20),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          "Tap to Enlarge",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // ==========================================
+          // 6. EVENT TIMELINE TEASER
+          // ==========================================
+          Container(
             padding: EdgeInsets.symmetric(
               horizontal: isMobile ? 0 : horizontalPadding,
               vertical: 80,
@@ -465,8 +852,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildScaledCard({required double width, required Widget card}) {
-    return SizedBox(
+  Widget _buildAdaptiveCard({required bool isMobile, required double width, required Widget card}) {
+    Widget scaled = SizedBox(
       width: width,
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -474,6 +861,8 @@ class HomePage extends StatelessWidget {
         child: card,
       ),
     );
+    if (isMobile) return scaled;
+    return IntrinsicHeight(child: scaled);
   }
 
   Widget _buildDayTeaserCard(

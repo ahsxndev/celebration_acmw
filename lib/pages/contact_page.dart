@@ -277,7 +277,7 @@ class _ContactPageState extends State<ContactPage> {
                           _buildContactInfoRow(
                             Icons.phone_outlined,
                             "Phone",
-                            "+92 327 9978294",
+                            "+92 309 7072739",
                             isMobile,
                           ),
                           SizedBox(height: isMobile ? 24 : 40),

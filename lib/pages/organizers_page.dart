@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/theme.dart';
 import '../widgets/global_footer.dart';
 import '../widgets/shared_components.dart';
@@ -12,170 +14,333 @@ class OrganizersPage extends StatelessWidget {
     final bool isMobile = screenWidth < 600;
     final bool isTablet = screenWidth >= 600 && screenWidth <= 800;
 
-    // Consistent responsive padding
-    final double horizontalPadding = screenWidth > 800
-        ? 80
-        : (isTablet ? 40 : 20);
+    final double horizontalPadding = screenWidth > 800 ? 80 : (isTablet ? 40 : 20);
     final double mobileSpacing = 16;
 
-    // Calculate exact width needed to fit 2 core committee cards per row on mobile
     final double cardWidth = isMobile
         ? (screenWidth - (horizontalPadding * 2) - mobileSpacing) / 2
-        : 280; // Slightly larger for core members on desktop
+        : 280;
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
-      // REMOVED PADDING FROM HERE so the footer can go full width!
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Content wrapped in padding
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: horizontalPadding,
-              vertical: 40,
+              vertical: isMobile ? 30 : 50,
             ),
             child: Column(
               children: [
-                // MAIN PAGE HEADER
                 const SectionHeader(
                   title: "The Team Behind the Celebration",
-                  subtitle:
-                  "Meet the dedicated individuals working hard to make ACM-W Celebrations (RCETWIC) 2026 a success.",
+                  subtitle: "Meet the dedicated individuals working hard to make ACM-W Celebrations (RCETCWIC) 2026 a success.",
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: isMobile ? 30 : 50),
 
-                // --- 1. CORE COMMITTEE SECTION ---
+                // ==========================================
+                // 1. CHAIRS SECTION
+                // ==========================================
                 Text(
-                  "Organizers",
+                  "Organizing Committee Chairs",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: isMobile ? 28 : 32,
+                    fontSize: isMobile ? 24 : 32,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryPurple,
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // Using the scaling wrapper to force 2-in-a-row on mobile
                 Wrap(
                   spacing: isMobile ? mobileSpacing : 32,
                   runSpacing: isMobile ? mobileSpacing : 32,
                   alignment: WrapAlignment.center,
                   children: [
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
                         name: "Dr. Natasha Nigar",
-                        role: "Organizer",
+                        role: "Celebration Chair",
+                        profileUrl: "https://staff.uet.edu.pk/profile/973",
+                        linkedinUrl: "https://www.linkedin.com/in/dr-natasha-nigar-a4a5b113",
                         imageUrl: "assets/images/persons/natasha.png",
-                        tagText: "Core Lead",
+                        tagText: "Profile",
                         tagColor: AppTheme.accentMagenta,
+                        size: CardSize.small,
                       ),
                     ),
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
                         name: "Mr. Shahid Islam",
-                        role: "Organizer",
-                        // Make sure you save his image as shahid.png in assets/images/persons/
+                        role: "Program Chair",
+                        profileUrl: "https://staff.uet.edu.pk/profile/765",
+                        linkedinUrl: "https://staff.uet.edu.pk/profile/765",
                         imageUrl: "assets/images/persons/shahid.png",
-                        tagText: "Core Lead",
+                        tagText: "Profile",
                         tagColor: AppTheme.accentMagenta,
+                        size: CardSize.small,
                       ),
                     ),
                   ],
                 ),
 
-                SizedBox(height: isMobile ? 60 : 80), // Gap between sections
-                // --- 2. ORGANIZING TEAM SECTION ---
+                SizedBox(height: isMobile ? 50 : 80),
+
+                // ==========================================
+                // 2. ENGAGEMENT LEADS SECTION
+                // ==========================================
                 Text(
-                  "Organizing Team",
+                  "Students Engagement Leads",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: isMobile ? 24 : 28,
+                    fontSize: isMobile ? 22 : 28,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryPurple,
                   ),
                 ),
                 const SizedBox(height: 32),
 
-                // A dense grid of the smaller OrganizerAvatar widgets
                 Wrap(
-                  spacing: isMobile ? 16 : 40, // Tighter gap on mobile
+                  spacing: isMobile ? 16 : 40,
                   runSpacing: isMobile ? 24 : 40,
                   alignment: WrapAlignment.center,
                   children: const [
-                    OrganizerAvatar(
-                      name: "Maria Rodriguez",
-                      teamRole: "Marketing Lead",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150&h=150",
+                    _VolunteerAvatar(
+                      name: "Haleema Sadia",
+                      imageUrl: "assets/images/volunteers/haleema.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/haleema-ghumman",
                     ),
-                    OrganizerAvatar(
-                      name: "David Chen",
-                      teamRole: "Logistics",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150&h=150",
-                    ),
-                    OrganizerAvatar(
-                      name: "Aisha Tariq",
-                      teamRole: "Design Team",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150&h=150",
-                    ),
-                    OrganizerAvatar(
-                      name: "John Smith",
-                      teamRole: "Sponsorships",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=150&h=150",
-                    ),
-                    OrganizerAvatar(
-                      name: "Emily Davis",
-                      teamRole: "Content Writer",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150&h=150",
-                    ),
-                    OrganizerAvatar(
-                      name: "Michael Lee",
-                      teamRole: "Web Developer",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150&h=150",
-                    ),
-                    OrganizerAvatar(
-                      name: "Sophia Ali",
-                      teamRole: "Social Media",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150&h=150",
-                    ),
-                    OrganizerAvatar(
-                      name: "Omar Farooq",
-                      teamRole: "Registration",
-                      imageUrl:
-                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150&h=150",
+                    _VolunteerAvatar(
+                      name: "Asma Fatima",
+                      imageUrl: "assets/images/volunteers/asma.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/asma-fatima254/",
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: isMobile ? 50 : 80),
+
+                // ==========================================
+                // 3. TEAM MEMBERS SECTION
+                // ==========================================
+                Text(
+                  "Team Members",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: isMobile ? 22 : 28,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.primaryPurple,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                Wrap(
+                  spacing: isMobile ? 16 : 40,
+                  runSpacing: isMobile ? 24 : 40,
+                  alignment: WrapAlignment.center,
+                  children: const [
+                    _VolunteerAvatar(
+                      name: "Abdullah Gondal",
+                      imageUrl: "assets/images/volunteers/abdullah.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/abdullah-gondal-58b7582b2",
+                    ),
+                    _VolunteerAvatar(
+                      name: "Ahsan Zaman",
+                      imageUrl: "assets/images/volunteers/ahsan.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/ahxanzaman/",
+                    ),
+                    _VolunteerAvatar(
+                      name: "Wafa Abbas",
+                      imageUrl: "assets/images/volunteers/wafa.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/m-wafa-abbas-9abba1281",
+                    ),
+                    _VolunteerAvatar(
+                      name: "Rejab Zahra",
+                      imageUrl: "assets/images/volunteers/rejab.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/rejab-zahra-19377b320",
+                    ),
+                    _VolunteerAvatar(
+                      name: "Abdul Rehman",
+                      imageUrl: "assets/images/volunteers/rehman.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/abdulrehman90",
+                    ),
+                    _VolunteerAvatar(
+                      name: "M. Zaman",
+                      imageUrl: "assets/images/volunteers/zaman.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/sheikhzaman-younis-652165311",
+                    ),
+                    _VolunteerAvatar(
+                      name: "Aden Butt",
+                      imageUrl: "assets/images/volunteers/aden.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/aden-butt-7b1251252",
+                    ),
+                    _VolunteerAvatar(
+                      name: "M. Aqib Ali",
+                      imageUrl: "assets/images/volunteers/aqib.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/muhammad-aqib-ali-0b95222b9",
+                    ),
+                    _VolunteerAvatar(
+                      name: "M. Mudassir",
+                      imageUrl: "assets/images/volunteers/mudassir.jpeg",
+                      linkedinUrl: "https://linkedin.com/in/username", // Placeholder
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 60),
               ],
             ),
           ),
-
-          // The Global Footer attached to the absolute bottom perfectly
           const GlobalFooter(),
         ],
       ),
     );
   }
 
-  // Helper widget to perfectly scale down the profile cards on mobile
-  Widget _buildScaledCard({required double width, required Widget card}) {
-    return SizedBox(
+  // Prevents giant white gaps on mobile layouts by disabling IntrinsicHeight
+  Widget _buildAdaptiveCard({required bool isMobile, required double width, required Widget card}) {
+    Widget scaled = SizedBox(
       width: width,
       child: FittedBox(
         fit: BoxFit.scaleDown,
         alignment: Alignment.topCenter,
         child: card,
       ),
+    );
+    if (isMobile) return scaled;
+    return IntrinsicHeight(child: scaled);
+  }
+}
+
+// ==========================================
+// UPGRADED VOLUNTEER AVATAR (RESPONSIVE + ANIMATED)
+// ==========================================
+class _VolunteerAvatar extends StatelessWidget {
+  final String name;
+  final String imageUrl;
+  final String linkedinUrl;
+
+  const _VolunteerAvatar({
+    required this.name,
+    required this.imageUrl,
+    required this.linkedinUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isMobile = MediaQuery.of(context).size.width < 600;
+
+    // Dynamic sizing based on screen size
+    final double avatarSize = isMobile ? 80 : 100;
+    final double containerWidth = isMobile ? 100 : 130;
+    final double nameFontSize = isMobile ? 12 : 14;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        bool isHovered = false;
+
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          onEnter: (_) => setState(() => isHovered = true),
+          onExit: (_) => setState(() => isHovered = false),
+          child: GestureDetector(
+            onTap: () async {
+              final Uri url = Uri.parse(linkedinUrl);
+              try {
+                if (!await launchUrl(url)) debugPrint('Could not launch $url');
+              } catch (e) {
+                debugPrint('Error launching URL: $e');
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              transform: Matrix4.identity()..translate(0.0, isHovered ? -5.0 : 0.0), // Lifts up on hover
+              width: containerWidth,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Circular Image with integrated badge
+                  Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        width: avatarSize,
+                        height: avatarSize,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            // Changes border color on hover
+                            color: isHovered ? AppTheme.accentMagenta : AppTheme.primaryPurple.withOpacity(0.15),
+                            width: isHovered ? 4 : 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryPurple.withOpacity(isHovered ? 0.2 : 0.05),
+                              blurRadius: isHovered ? 20 : 10,
+                              offset: Offset(0, isHovered ? 8 : 4),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Icon(
+                                Icons.person,
+                                size: avatarSize * 0.5,
+                                color: AppTheme.primaryPurple.withOpacity(0.3)
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Small Integrated LinkedIn Badge
+                      Positioned(
+                        bottom: -2,
+                        right: -2,
+                        child: Container(
+                          padding: EdgeInsets.all(isMobile ? 4 : 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 4, offset: const Offset(0, 2)),
+                            ],
+                          ),
+                          child: FaIcon(
+                            FontAwesomeIcons.linkedin,
+                            size: isMobile ? 14 : 16,
+                            color: const Color(0xFF0077B5),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: isMobile ? 10 : 14),
+
+                  // Name
+                  Text(
+                    name,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppTheme.primaryPurple,
+                      fontWeight: FontWeight.bold,
+                      fontSize: nameFontSize,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -134,7 +134,7 @@ class _AboutPageState extends State<AboutPage>
                           color: AppTheme.lightLavender,
                           borderRadius: BorderRadius.circular(24),
                           image: const DecorationImage(
-                            image: AssetImage("assets/images/about_2.png"),
+                            image: AssetImage("assets/images/about_mission.png"),
                             fit: BoxFit.cover,
                           ),
                         ),

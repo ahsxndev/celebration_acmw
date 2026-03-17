@@ -29,19 +29,22 @@ class SpeakersPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 40),
+            padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding,
+              vertical: isMobile ? 20 : 40, // Reduced top padding on mobile
+            ),
             child: Column(
               children: [
-                // MAIN PAGE HEADER
                 const SectionHeader(
                   title: "Meet Our Speakers & Experts",
                   subtitle: "Learn from industry leaders, panel experts, and hands-on workshop instructors.",
                 ),
-                const SizedBox(height: 40),
+                // Reduced from 40
+                SizedBox(height: isMobile ? 10 : 20),
 
                 // --- 1. KEYNOTE SPEAKERS SECTION ---
                 Text(
-                  "Keynotes",
+                  "Keynote Speakers",
                   style: TextStyle(
                     fontSize: isMobile ? 22 : (isTablet ? 24 : 28),
                     fontWeight: FontWeight.bold,
@@ -50,16 +53,33 @@ class SpeakersPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Wrap(
-                  spacing: isMobile ? mobileSpacing : 40,
-                  runSpacing: isMobile ? mobileSpacing : 40,
+                  spacing: isMobile ? mobileSpacing : 25,
+                  runSpacing: isMobile ? mobileSpacing : 30,
                   alignment: WrapAlignment.center,
                   children: [
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: keynoteCardWidth,
                       card: const UniversalProfileCard(
                         name: "Dr. Kashif Shahzad",
-                        role: "Board of Directors, PITC",
+                        role: "CEO, Power Information Technology Company (PITC), Lahore, Pakistan",
+                        topic: "She Leads the Future: Women Driving Innovation & Transformation in the Digital Age",
+                        profileUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
                         imageUrl: "assets/images/persons/kashif.png",
+                        tagText: "Keynote Speaker",
+                        tagColor: AppTheme.accentMagenta,
+                        size: CardSize.large,
+                      ),
+                    ),
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
+                      width: keynoteCardWidth,
+                      card: const UniversalProfileCard(
+                        name: "Dr. Kashif Shahzad",
+                        role: "CEO, Power Information Technology Company (PITC), Lahore, Pakistan",
+                        topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
+                        profileUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
+                        imageUrl: "assets/images/persons/",
                         tagText: "Keynote Speaker",
                         tagColor: AppTheme.accentMagenta,
                         size: CardSize.large,
@@ -68,7 +88,8 @@ class SpeakersPage extends StatelessWidget {
                   ],
                 ),
 
-                SizedBox(height: isMobile ? 60 : 80),
+                // SIGNIFICANTLY REDUCED GAP (From 60 to 30)
+                SizedBox(height: isMobile ? 30 : 80),
 
                 // --- 2. WORKSHOP LEADS SECTION ---
                 Text(
@@ -79,50 +100,47 @@ class SpeakersPage extends StatelessWidget {
                     color: AppTheme.primaryPurple,
                   ),
                 ),
-
                 const SizedBox(height: 24),
                 Wrap(
                   spacing: isMobile ? mobileSpacing : 24,
                   runSpacing: isMobile ? mobileSpacing : 32,
                   alignment: WrapAlignment.center,
                   children: [
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: cardWidth,
-                      card: UniversalProfileCard(
+                      card: const UniversalProfileCard(
                         name: "Dr. Sidra Zafar",
-                        role: "Head of CS, Kinnaird College",
+                        role: "Head of Computer Science, Kinnaird College, Lahore, Pakistan",
+                        topic: "She Builds with AI: A Hands-On Workshop on Generative AI Applications",
+                        profileUrl: "https://www.linkedin.com/in/sidra-zafar",
                         imageUrl: "assets/images/persons/sidra.jpeg",
                         tagText: "Workshop Lead",
-                        tagColor: Colors.teal.shade600,
+                        tagColor: Colors.teal,
                       ),
                     ),
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: cardWidth,
-                      card: UniversalProfileCard(
+                      card: const UniversalProfileCard(
                         name: "Mr. Usman Nazir",
-                        role: "Theta Solutions",
+                        role: "CEO, Theta Solutions, Sialkot, Pakistan",
+                        topic: "Cybersecurity Essentials: Protecting the Digital World",
+                        profileUrl: "https://thetasolutions.pk/our-core-team/",
                         imageUrl: "assets/images/persons/usman.jpg",
                         tagText: "Workshop Lead",
-                        tagColor: Colors.teal.shade600,
-                      ),
-                    ),
-                    _buildScaledCard(
-                      width: cardWidth,
-                      card: UniversalProfileCard(
-                        name: "Mr. Hamza",
-                        role: "Technical Expert",
-                        imageUrl: "assets/images/persons/hamza.png",
-                        tagText: "Workshop Lead",
-                        tagColor: Colors.teal.shade600,
+                        tagColor: Colors.teal,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: isMobile ? 60 : 80),
+
+                // SIGNIFICANTLY REDUCED GAP (From 60 to 30)
+                SizedBox(height: isMobile ? 30 : 80),
 
                 // --- 3. PANELISTS SECTION ---
                 Text(
-                  "Panelists",
+                  "Panelist Speakers",
                   style: TextStyle(
                     fontSize: isMobile ? 22 : (isTablet ? 24 : 28),
                     fontWeight: FontWeight.bold,
@@ -135,34 +153,46 @@ class SpeakersPage extends StatelessWidget {
                   runSpacing: isMobile ? mobileSpacing : 32,
                   alignment: WrapAlignment.center,
                   children: [
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
                         name: "Dr. M. Ahmad Raza",
-                        role: "Asst. Professor, FAST NUCES",
+                        role: "FAST NUCES, Lahore, Pakistan",
                         imageUrl: "assets/images/persons/ahmad.jpeg",
-                        tagText: "Panelist",
-                        tagColor: AppTheme.primaryPurple,
+                        profileUrl: "https://www.linkedin.com/in/muhammad-ahmad-raza-phd-b0949310",
+                        size: CardSize.small,
                       ),
                     ),
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
                         name: "Mr. Muhammad Umer",
-                        role: "Online Panelist",
+                        role: "Sr. Software Engineer, Geopaq Logic, Irvine, Los Angeles, USA",
                         imageUrl: "assets/images/persons/umer.jpeg",
-                        tagText: "Panelist",
-                        tagColor: AppTheme.primaryPurple,
+                        size: CardSize.small,
                       ),
                     ),
-                    _buildScaledCard(
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
                         name: "Ms. Shumaila Khaliq",
-                        role: "Online Panelist",
+                        role: "Sr. Software Engineer, CU Direct, Irvine, Los Angeles, USA",
                         imageUrl: "assets/images/persons/shumaila.jpeg",
-                        tagText: "Panelist",
-                        tagColor: AppTheme.primaryPurple,
+                        size: CardSize.small,
+                      ),
+                    ),
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
+                      width: cardWidth,
+                      card: const UniversalProfileCard(
+                        name: "Dr. M. Ahmad Raza",
+                        role: "FAST NUCES, Lahore, Pakistan",
+                        imageUrl: "assets/images/persons/",
+                        profileUrl: "https://www.linkedin.com/in/muhammad-ahmad-raza-phd-b0949310",
+                        size: CardSize.small,
                       ),
                     ),
                   ],
@@ -171,16 +201,15 @@ class SpeakersPage extends StatelessWidget {
               ],
             ),
           ),
-
-          // FOOTER
           const GlobalFooter(),
         ],
       ),
     );
   }
 
-  Widget _buildScaledCard({required double width, required Widget card}) {
-    return SizedBox(
+  // HELPER: Only uses IntrinsicHeight on Desktop to prevent empty space on Mobile
+  Widget _buildAdaptiveCard({required bool isMobile, required double width, required Widget card}) {
+    Widget scaled = SizedBox(
       width: width,
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -188,5 +217,8 @@ class SpeakersPage extends StatelessWidget {
         child: card,
       ),
     );
+
+    if (isMobile) return scaled; // No IntrinsicHeight on mobile
+    return IntrinsicHeight(child: scaled); // Keep it for desktop alignment
   }
 }

@@ -113,6 +113,7 @@ class MyApp extends StatelessWidget {
       title: 'ACM-W RCET Celebration',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(scrollbars: true),
       routerConfig: _router, // Use the router configuration
     );
   }

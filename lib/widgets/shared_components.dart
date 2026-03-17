@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // ADDED FOR ICONS
+import 'package:url_launcher/url_launcher.dart';
 import '../core/theme.dart';
 
 // ==========================================
 // SMART IMAGE HANDLER (INTERNAL)
-// Automatically handles Web vs Asset images and missing files
 // ==========================================
 class _ProfileImageFallback extends StatelessWidget {
   final String imageUrl;
@@ -21,7 +22,7 @@ class _ProfileImageFallback extends StatelessWidget {
         child: Icon(
           Icons.person_rounded,
           size: size * 0.5,
-          color: AppTheme.primaryPurple.withValues(alpha: 0.4),
+          color: AppTheme.primaryPurple.withOpacity(0.4),
         ),
       ),
     );
@@ -60,9 +61,7 @@ class SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final double titleSize = screenWidth < 600
-        ? 24
-        : (screenWidth < 900 ? 28 : 32);
+    final double titleSize = screenWidth < 600 ? 24 : (screenWidth < 900 ? 28 : 32);
     final double subtitleSize = screenWidth < 600 ? 14 : 16;
 
     return Column(
@@ -76,22 +75,18 @@ class SectionHeader extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-
         if (subtitle != null) ...[
           const SizedBox(height: 8),
           Text(
             subtitle!,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppTheme.textDark.withValues(alpha: 0.7),
+              color: AppTheme.textDark.withOpacity(0.7),
               fontSize: subtitleSize,
             ),
           ),
         ],
-
         const SizedBox(height: 16),
-
-        // Decorative underline
         Container(
           height: 4,
           width: 60,
@@ -100,7 +95,6 @@ class SectionHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-
         const SizedBox(height: 40),
       ],
     );
@@ -108,27 +102,44 @@ class SectionHeader extends StatelessWidget {
 }
 
 // ==========================================
-// 2. UNIVERSAL PROFILE CARD
+// 2. UNIVERSAL PROFILE CARD (WITH LINKEDIN BADGE)
 // ==========================================
-enum CardSize { large, regular }
+enum CardSize { large, regular, small }
 
 class UniversalProfileCard extends StatelessWidget {
   final String name;
   final String role;
+  final String? topic;
   final String imageUrl;
-  final String tagText;
-  final Color tagColor;
+  final String? tagText;
+  final Color? tagColor;
+  final String? profileUrl; // Opens when the whole card is clicked
+  final String? linkedinUrl; // ADDED: Opens when the small icon is clicked
   final CardSize size;
 
   const UniversalProfileCard({
     super.key,
     required this.name,
     required this.role,
+    this.topic,
     required this.imageUrl,
-    required this.tagText,
-    required this.tagColor,
+    this.tagText,
+    this.tagColor,
+    this.profileUrl,
+    this.linkedinUrl, // ADDED
     this.size = CardSize.regular,
   });
+
+  Future<void> _launchURL(String? link) async {
+    if (link != null && link.isNotEmpty) {
+      final Uri url = Uri.parse(link);
+      try {
+        if (!await launchUrl(url)) debugPrint('Could not launch $url');
+      } catch (e) {
+        debugPrint('Error: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,104 +147,198 @@ class UniversalProfileCard extends StatelessWidget {
     final bool isMobile = screenWidth < 600;
 
     final double cardWidth = size == CardSize.large
-        ? (isMobile ? 220 : 280)
-        : (isMobile ? 180 : 220);
+        ? (isMobile ? 260 : 300)
+        : size == CardSize.small
+        ? (isMobile ? 220 : 250)
+        : (isMobile ? 240 : 260);
+
     final double imageSize = size == CardSize.large
-        ? (isMobile ? 100 : 160)
-        : (isMobile ? 80 : 120);
+        ? (isMobile ? 90 : 120)
+        : (isMobile ? 70 : 100);
+
     final double titleFontSize = size == CardSize.large
         ? (isMobile ? 15 : 20)
         : (isMobile ? 14 : 18);
-    final double roleFontSize = isMobile ? 11 : 13;
-    final double tagFontSize = isMobile ? 10 : 12;
-    final double cardPadding = isMobile ? 14 : 20;
 
-    return Container(
+    final double roleFontSize = isMobile ? 11 : 14;
+    final double cardPadding = isMobile ? 16 : 24;
+
+    double exactMobileHeight = 0;
+    if (isMobile) {
+      if (size == CardSize.large) exactMobileHeight = 342;
+      else if (size == CardSize.small) exactMobileHeight = 222;
+      else exactMobileHeight = 292;
+    }
+
+    Widget cardBody = Container(
       width: cardWidth,
+      height: isMobile ? exactMobileHeight : null,
       padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: AppTheme.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: profileUrl != null ? AppTheme.primaryPurple.withOpacity(0.1) : Colors.transparent,
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryPurple.withValues(alpha: 0.08),
+            color: AppTheme.primaryPurple.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Profile Image
-          Container(
-            width: imageSize,
-            height: imageSize,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppTheme.lightLavender, width: 4),
-            ),
-            child: ClipOval(
-              child: _ProfileImageFallback(imageUrl: imageUrl, size: imageSize),
-            ),
-          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // --- IMAGE WITH OPTIONAL BADGE ---
+              Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  Container(
+                    width: imageSize,
+                    height: imageSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppTheme.lightLavender, width: 3),
+                    ),
+                    child: ClipOval(
+                      child: _ProfileImageFallback(imageUrl: imageUrl, size: imageSize),
+                    ),
+                  ),
 
-          const SizedBox(height: 16),
-
-          // Name
-          Text(
-            name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppTheme.primaryPurple,
-              fontWeight: FontWeight.bold,
-              fontSize: titleFontSize,
-            ),
-          ),
-
-          const SizedBox(height: 4),
-
-          // Role
-          SizedBox(
-            height: roleFontSize * 1.2 * 2 + 2,
-            child: Text(
-              role,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: AppTheme.textDark.withValues(alpha: 0.7),
-                fontSize: roleFontSize,
-                height: 1.2,
+                  // NEW: Badge Icon logic
+                  if (linkedinUrl != null && linkedinUrl!.isNotEmpty)
+                    GestureDetector(
+                      onTap: () => _launchURL(linkedinUrl),
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Container(
+                          padding: EdgeInsets.all(isMobile ? 4 : 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2)),
+                            ],
+                          ),
+                          // Smart Icon: Shows LinkedIn if URL contains 'linkedin', else shows a web icon (for Staff Links)
+                          child: linkedinUrl!.contains('linkedin')
+                              ? FaIcon(FontAwesomeIcons.linkedin, size: isMobile ? 14 : 16, color: const Color(0xFF0077B5))
+                              : Icon(Icons.public_rounded, size: isMobile ? 14 : 16, color: AppTheme.primaryPurple),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ),
-          ),
+              // --------------------------------
 
-          const SizedBox(height: 16),
-
-          // Tag pill
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 10 : 16,
-              vertical: isMobile ? 5 : 6,
-            ),
-            decoration: BoxDecoration(
-              color: tagColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              tagText,
-              style: TextStyle(
-                color: AppTheme.white,
-                fontWeight: FontWeight.w600,
-                fontSize: tagFontSize,
-                letterSpacing: 0.5,
+              const SizedBox(height: 12),
+              Text(
+                name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.primaryPurple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: titleFontSize,
+                ),
               ),
-            ),
+              const SizedBox(height: 4),
+              Text(
+                role,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppTheme.textDark.withOpacity(0.7),
+                  fontSize: roleFontSize,
+                  height: 1.2,
+                ),
+              ),
+              if (topic != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppTheme.lightLavender.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(12),
+                    border: const Border(
+                      left: BorderSide(color: AppTheme.accentMagenta, width: 3),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "TOPIC",
+                        style: TextStyle(
+                          color: AppTheme.accentMagenta,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        topic!,
+                        style: TextStyle(
+                          color: AppTheme.textDark.withOpacity(0.9),
+                          fontSize: isMobile ? 10 : 13,
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
           ),
+
+          if (tagText != null && tagColor != null)
+            Padding(
+              // ADDED SPACE BEFORE THE TAG
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: tagColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  tagText!,
+                  style: TextStyle(
+                    color: AppTheme.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: isMobile ? 8 : 12,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            )
+          else
+            const SizedBox.shrink(),
         ],
       ),
     );
+
+    // Card background click logic
+    if (profileUrl != null && profileUrl!.isNotEmpty) {
+      return GestureDetector(
+        onTap: () => _launchURL(profileUrl),
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: cardBody,
+        ),
+      );
+    }
+
+    return cardBody;
   }
 }
 
@@ -271,9 +376,7 @@ class OrganizerAvatar extends StatelessWidget {
             child: _ProfileImageFallback(imageUrl: imageUrl, size: size),
           ),
         ),
-
         const SizedBox(height: 12),
-
         Text(
           name,
           textAlign: TextAlign.center,
@@ -283,14 +386,12 @@ class OrganizerAvatar extends StatelessWidget {
             fontSize: 15,
           ),
         ),
-
         const SizedBox(height: 2),
-
         Text(
           teamRole,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: AppTheme.textDark.withValues(alpha: 0.6),
+            color: AppTheme.textDark.withOpacity(0.6),
             fontSize: 12,
           ),
         ),

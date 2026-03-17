@@ -88,7 +88,7 @@ class GlobalFooter extends StatelessWidget {
               _footerText("RCET UET ACM-W Student Chapter"),
               _footerText("Rachna College of Engineering and Technology,\nGujranwala, Punjab"),
               const SizedBox(height: 8),
-              _footerText("Phone: +92 327 9978294"),
+              _footerText("Phone: +92 309 7072739"),
               _footerText("Email: acmwrcetchapter@gmail.com"),
               const SizedBox(height: 16),
               Row(
@@ -159,7 +159,7 @@ class GlobalFooter extends StatelessWidget {
         // FIXED: Split email and phone into two separate lines so they never wrap awkwardly!
         _footerTextCentered("Email: acmwrcetchapter@gmail.com"),
         const SizedBox(height: 4),
-        _footerTextCentered("Phone: +92 327 9978294"),
+        _footerTextCentered("Phone: +92 309 7072739"),
 
         const SizedBox(height: 24),
         Row(

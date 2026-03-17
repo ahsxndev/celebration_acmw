@@ -1,4 +1,4 @@
-import 'dart:ui'; // REQUIRED for the frosted glass blur effect
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -38,18 +38,25 @@ class _MainLayoutState extends State<MainLayout> {
     final width = MediaQuery.of(context).size.width;
     final bool isDesktop = width > 850;
     final bool isCompactDesktop = width > 850 && width < 1150;
-
     final double headerHeight = width <= 375 ? 60.0 : 80.0;
 
+    // DETERMINING THE NAVBAR STYLE
+    final bool isHome = widget.activePage == 'Home';
+
+    final Color navBgColor = !isHome || _isScrolled
+        ? AppTheme.white.withOpacity(0.9)
+        : Colors.transparent;
+
+    final Color contentColor = !isHome || _isScrolled
+        ? AppTheme.primaryPurple
+        : Colors.white;
+
     return Scaffold(
-      // CRITICAL: This allows content to scroll UNDER the appbar, enabling the blur effect!
       extendBodyBehindAppBar: true,
       backgroundColor: AppTheme.white,
-
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(headerHeight),
         child: ClipRRect(
-          // Contains the blur
           child: BackdropFilter(
             filter: ImageFilter.blur(
               sigmaX: _isScrolled ? 15.0 : 0.0,
@@ -59,115 +66,98 @@ class _MainLayoutState extends State<MainLayout> {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut,
               decoration: BoxDecoration(
-                // Starts mostly solid white to hide the image cutoff, turns translucent glassy on scroll
-                color: _isScrolled
-                    ? AppTheme.white.withOpacity(0.85)
-                    : AppTheme.white.withOpacity(0.98),
+                color: navBgColor,
                 border: Border(
                   bottom: BorderSide(
-                    color: _isScrolled
-                        ? Colors.grey.withOpacity(0.2)
-                        : Colors.transparent,
+                    color: _isScrolled ? Colors.grey.withOpacity(0.2) : Colors.transparent,
                     width: 1,
                   ),
                 ),
                 boxShadow: _isScrolled
                     ? [
-                        BoxShadow(
-                          color: AppTheme.primaryPurple.withOpacity(0.08),
-                          blurRadius: 20,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
+                  BoxShadow(
+                    color: AppTheme.primaryPurple.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
                     : [],
               ),
-              // FIXED: Using AppBar inside the AnimatedContainer prevents the 99754px overflow crash!
               child: AppBar(
-                backgroundColor: Colors
-                    .transparent, // Let the AnimatedContainer show through
+                backgroundColor: Colors.transparent,
                 elevation: 0,
                 titleSpacing: 0,
                 toolbarHeight: headerHeight,
                 title: Padding(
                   padding: EdgeInsets.only(left: width <= 375 ? 16 : 32),
-                  child: _buildAnimatedLogo(isCompactDesktop, width),
+                  child: _buildAnimatedLogo(isCompactDesktop, width, contentColor),
                 ),
                 actions: isDesktop
                     ? [
-                        ..._routes.keys.map(
-                          (title) => _navLink(
-                            title,
-                            context,
-                            isActive: widget.activePage == _activeKey(title),
-                            isCompact: isCompactDesktop,
-                          ),
-                        ),
-                        SizedBox(width: isCompactDesktop ? 8 : 16),
-                        // Center prevents the button from stretching vertically
-                        Center(
-                          child: _buildRegisterButton(
-                            isCompactDesktop,
-                            context,
-                          ),
-                        ),
-                        SizedBox(width: isCompactDesktop ? 12 : 24),
-                      ]
+                  ..._routes.keys.map(
+                        (title) => _navLink(
+                      title,
+                      context,
+                      isActive: widget.activePage == _activeKey(title),
+                      isCompact: isCompactDesktop,
+                      textColor: contentColor,
+                    ),
+                  ),
+                  SizedBox(width: isCompactDesktop ? 8 : 16),
+                  Center(
+                    child: _buildRegisterButton(isCompactDesktop, context),
+                  ),
+                  SizedBox(width: isCompactDesktop ? 12 : 24),
+                ]
                     : [
-                        Builder(
-                          builder: (context) => Padding(
-                            padding: const EdgeInsets.only(right: 12),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.menu_rounded,
-                                color: AppTheme.primaryPurple,
-                                size: 30,
-                              ),
-                              onPressed: () =>
-                                  Scaffold.of(context).openEndDrawer(),
-                            ),
-                          ),
+                  Builder(
+                    builder: (context) => Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.menu_rounded,
+                          color: contentColor,
+                          size: 30,
                         ),
-                      ],
+                        onPressed: () => Scaffold.of(context).openEndDrawer(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
-
       endDrawer: !isDesktop ? _buildDrawer(context, width) : null,
-
       body: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification.metrics.axis == Axis.vertical) {
-            if (notification.metrics.pixels > 10 && !_isScrolled) {
+            if (notification.metrics.pixels > 50 && !_isScrolled) {
               setState(() => _isScrolled = true);
-            } else if (notification.metrics.pixels <= 10 && _isScrolled) {
+            } else if (notification.metrics.pixels <= 50 && _isScrolled) {
               setState(() => _isScrolled = false);
             }
           }
           return false;
         },
-        // We add top padding to non-Home pages so their content doesn't get permanently stuck under the AppBar
-        child: widget.activePage == 'Home'
+        child: isHome
             ? widget.child
             : Padding(
-                padding: EdgeInsets.only(top: headerHeight),
-                child: widget.child,
-              ),
+          padding: EdgeInsets.only(top: headerHeight),
+          child: widget.child,
+        ),
       ),
     );
   }
 
-  // --- NAV LINK ---
-  // ===================================================
-  // PRO ANIMATED NAV LINKS (FIXED)
-  // ===================================================
   Widget _navLink(
-    String title,
-    BuildContext context, {
-    required bool isActive,
-    required bool isCompact,
-  }) {
+      String title,
+      BuildContext context, {
+        required bool isActive,
+        required bool isCompact,
+        required Color textColor,
+      }) {
     final path = _routes[title]!;
 
     return Padding(
@@ -179,29 +169,26 @@ class _MainLayoutState extends State<MainLayout> {
           TextButton(
             onPressed: () => context.go(path),
             style: TextButton.styleFrom(
-              overlayColor:
-                  Colors.transparent, // Removes standard ugly hover ripple
+              overlayColor: Colors.transparent,
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             ),
-            // Smoothly transitions font weight and color
             child: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 250),
               style: TextStyle(
-                color: isActive ? AppTheme.primaryPurple : Colors.grey.shade700,
+                color: isActive ? AppTheme.accentMagenta : textColor.withOpacity(0.9),
                 fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                 fontSize: isCompact ? 13 : 15,
-                fontFamily: 'Montserrat', // Ensures font consistency
+                fontFamily: 'Montserrat',
               ),
               child: Text(title),
             ),
           ),
-          // FIXED: Swapped to easeOutCubic to prevent negative width crashing
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic, // Safe, smooth premium sliding effect
+            curve: Curves.easeOutCubic,
             margin: const EdgeInsets.only(top: 2),
             height: 3,
-            width: isActive ? 24.0 : 0.0, // Safely animates to exactly 0.0
+            width: isActive ? 24.0 : 0.0,
             decoration: BoxDecoration(
               color: AppTheme.accentMagenta,
               borderRadius: BorderRadius.circular(4),
@@ -212,13 +199,12 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  // --- LOGO ---
-  Widget _buildAnimatedLogo(bool isCompact, double width) {
-    final logoSize = width <= 375 ? 33.0 : (isCompact ? 53.0 : 60.0);
+  Widget _buildAnimatedLogo(bool isCompact, double width, Color textColor) {
+    final logoSize = width <= 375 ? 45.0 : (isCompact ? 75.0 : 85.0);
 
     return AnimatedScale(
       duration: const Duration(milliseconds: 300),
-      scale: _isScrolled ? 0.95 : 1.0, // Subtly shrinks on scroll
+      scale: _isScrolled ? 0.90 : 1.0,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -227,7 +213,7 @@ class _MainLayoutState extends State<MainLayout> {
             height: logoSize,
             errorBuilder: (_, _, _) => Icon(
               Icons.computer,
-              color: AppTheme.primaryPurple,
+              color: textColor,
               size: logoSize,
             ),
           ),
@@ -235,13 +221,15 @@ class _MainLayoutState extends State<MainLayout> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 "ACM-W RCET",
                 style: TextStyle(
-                  color: AppTheme.primaryPurple,
+                  color: textColor,
                   fontWeight: FontWeight.w800,
-                  fontSize: width <= 425 ? 16 : 20,
+                  fontSize: width <= 425 ? 15 : 20,
+                  height: 1.1, // Kept tight so it doesn't expand the appbar
                 ),
               ),
               Text(
@@ -250,6 +238,19 @@ class _MainLayoutState extends State<MainLayout> {
                   color: AppTheme.accentMagenta,
                   fontWeight: FontWeight.w600,
                   fontSize: width <= 425 ? 12 : 14,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 2),
+              // ADDED DATE HERE (Modeled after HCIPAK)
+              Text(
+                "29-30 April, 2026",
+                style: TextStyle(
+                  color: textColor.withOpacity(0.85),
+                  fontWeight: FontWeight.w600,
+                  fontSize: width <= 425 ? 10 : 12,
+                  letterSpacing: 0.5,
+                  height: 1.1,
                 ),
               ),
             ],
@@ -259,7 +260,6 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  // --- REGISTER BUTTON ---
   Widget _buildRegisterButton(bool isCompact, BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -267,12 +267,12 @@ class _MainLayoutState extends State<MainLayout> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: _isScrolled
             ? [
-                BoxShadow(
-                  color: AppTheme.accentMagenta.withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ]
+          BoxShadow(
+            color: AppTheme.accentMagenta.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ]
             : [],
       ),
       child: ElevatedButton(
@@ -300,7 +300,6 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  // --- DRAWER ---
   Widget _buildDrawer(BuildContext context, double width) {
     return Drawer(
       backgroundColor: AppTheme.white,
@@ -308,11 +307,12 @@ class _MainLayoutState extends State<MainLayout> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 10, 20),
+              // REDUCED PADDING: Tighter top header
+              padding: const EdgeInsets.fromLTRB(20, 16, 8, 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: _buildAnimatedLogo(false, width)),
+                  Expanded(child: _buildAnimatedLogo(true, width, AppTheme.primaryPurple)),
                   IconButton(
                     icon: const Icon(Icons.close_rounded),
                     onPressed: () => Navigator.pop(context),
@@ -320,29 +320,30 @@ class _MainLayoutState extends State<MainLayout> {
                 ],
               ),
             ),
-            Divider(color: Colors.grey.shade200),
+            Divider(color: Colors.grey.shade200, height: 1),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                // REDUCED PADDING: Tighter list view container
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 children: _routes.entries.map((entry) {
                   final isActive = widget.activePage == _activeKey(entry.key);
                   return _drawerItem(entry.key, entry.value, context, isActive);
                 }).toList(),
               ),
             ),
-            // NEW: Register Now Button for Mobile Menu
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              // REDUCED PADDING: Tighter bottom button area
+              padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close the drawer
-                    _launchRegistrationForm(); // Open the form
+                    Navigator.pop(context);
+                    _launchRegistrationForm();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.accentMagenta,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 14), // Reduced height
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -351,7 +352,7 @@ class _MainLayoutState extends State<MainLayout> {
                     "Register Now",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 15, // Slightly smaller text
                       color: Colors.white,
                     ),
                   ),
@@ -364,22 +365,23 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  Widget _drawerItem(
-    String title,
-    String path,
-    BuildContext context,
-    bool isActive,
-  ) {
+  Widget _drawerItem(String title, String path, BuildContext context, bool isActive) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      // REDUCED MARGIN: Items sit closer together
+      margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
         color: isActive ? AppTheme.lightLavender : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10), // Slightly sharper corners
       ),
       child: ListTile(
+        // ADDED: Compresses the ListTile significantly
+        dense: true,
+        visualDensity: VisualDensity.compact,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         title: Text(
           title,
           style: TextStyle(
+            fontSize: 14, // REDUCED FONT SIZE
             fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
             color: isActive ? AppTheme.primaryPurple : Colors.black87,
           ),
