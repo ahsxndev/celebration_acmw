@@ -281,7 +281,7 @@ class _HomePageState extends State<HomePage> {
           // ==========================================
           Container(
             width: double.infinity,
-            color: AppTheme.white, // White background for the section
+            color: AppTheme.white,
             padding: EdgeInsets.symmetric(
               horizontal: horizontalPadding,
               vertical: 80,
@@ -298,26 +298,30 @@ class _HomePageState extends State<HomePage> {
                   direction: isDesktop ? Axis.horizontal : Axis.vertical,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // LEFT SIDE: IMAGE
+                    // LEFT SIDE: IMAGE (Size reduced and controlled)
                     Expanded(
-                      flex: isDesktop ? 5 : 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.primaryPurple.withOpacity(0.1),
-                              blurRadius: 30,
-                              offset: const Offset(0, 15),
+                      flex: isDesktop ? 4 : 0, // Reduced from 5 to 4 to give text more focus
+                      child: Center(
+                        child: Container(
+                          // Limits how large the image can get on all devices
+                          constraints: BoxConstraints(maxWidth: isMobile ? 300 : 400),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.primaryPurple.withOpacity(0.1),
+                                blurRadius: 30,
+                                offset: const Offset(0, 15),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              "assets/images/about_2.png",
+                              width: double.infinity,
+                              fit: BoxFit.cover,
                             ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.asset(
-                            "assets/images/about_2.png",
-                            width: double.infinity,
-                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
@@ -325,13 +329,13 @@ class _HomePageState extends State<HomePage> {
 
                     if (isDesktop) const SizedBox(width: 40) else const SizedBox(height: 40),
 
-                    // RIGHT SIDE: TEXT (Now inside a light background box)
+                    // RIGHT SIDE: TEXT
                     Expanded(
-                      flex: isDesktop ? 7 : 0,
+                      flex: isDesktop ? 7 : 0, // Kept text wider
                       child: Container(
                         padding: EdgeInsets.all(isMobile ? 24 : 40),
                         decoration: BoxDecoration(
-                          color: AppTheme.lightLavender.withOpacity(0.15), // Light Color Background
+                          color: AppTheme.lightLavender.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: AppTheme.primaryPurple.withOpacity(0.05)),
                         ),
@@ -382,7 +386,7 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // ==========================================
-          // 3. ABOUT SNIPPET SECTION (UNCHANGED)
+          // 3. ABOUT SNIPPET SECTION (SIZE & RATIO FIXED)
           // ==========================================
           Container(
             color: AppTheme.primaryPurple,
@@ -394,8 +398,9 @@ class _HomePageState extends State<HomePage> {
               direction: isDesktop ? Axis.horizontal : Axis.vertical,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // TEXT SIDE
                 Expanded(
-                  flex: isDesktop ? 1 : 0,
+                  flex: isDesktop ? 6 : 0, // Increased text ratio slightly
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -441,18 +446,25 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                if (isDesktop)
-                  const SizedBox(width: 60)
-                else
-                  const SizedBox(height: 40),
+
+                if (isDesktop) const SizedBox(width: 60) else const SizedBox(height: 40),
+
+                // IMAGE SIDE (Size reduced and controlled)
                 Expanded(
-                  flex: isDesktop ? 1 : 0,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.asset(
-                      "assets/images/about_mission.png",
-                      width: double.infinity,
-                      fit: BoxFit.fitWidth,
+                  flex: isDesktop ? 4 : 0, // Shrunk the image flex
+                  child: Center(
+                    child: Container(
+                      // Hard constraint so the illustration doesn't explode on wide screens or tall mobile screens
+                      constraints: BoxConstraints(maxWidth: isMobile ? 320 : 450),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: Image.asset(
+                          "assets/images/about_mission.png",
+                          width: double.infinity,
+                          // Contain ensures the graphic fits perfectly without awkward cropping
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -555,10 +567,10 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // ==========================================
-          // 5. POSTER DESIGN COMPETITION (LAYOUT & RESPONSIVENESS FIXED)
+          // 5. POSTER DESIGN COMPETITION
           // ==========================================
           Container(
-            color: AppTheme.lightLavender.withOpacity(0.15), // Very light distinction background
+            color: AppTheme.lightLavender.withOpacity(0.15),
             padding: EdgeInsets.symmetric(
               horizontal: horizontalPadding,
               vertical: isMobile ? 40 : 80,
@@ -632,20 +644,18 @@ class _HomePageState extends State<HomePage> {
 
                     // RIGHT SIDE: CLICKABLE POSTER
                     Expanded(
-                      flex: isDesktop ? 5 : 0, // Adjusted flex to balance the layout
+                      flex: isDesktop ? 5 : 0,
                       child: MouseRegion(
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () => _showPosterPopup(context),
                           child: Padding(
-                            // FIX: This padding acts as a "safe zone" so the glowing/pulsing animation doesn't get clipped!
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: Stack(
                               alignment: Alignment.center,
                               clipBehavior: Clip.none,
                               children: [
                                 Container(
-                                  // FIX: Added maxHeight to prevent aspect ratio stretching on weird screen sizes
                                   constraints: BoxConstraints(
                                     maxWidth: isMobile ? 280 : 380,
                                     maxHeight: isMobile ? 400 : 550,
@@ -654,13 +664,12 @@ class _HomePageState extends State<HomePage> {
                                     imagePath: "assets/images/competition_poster.png",
                                   ),
                                 ),
-                                // Floating "Tap to Enlarge" hint - FIX: Moved INSIDE the visible bounds
                                 Positioned(
-                                  bottom: 20, // Moved up to hover elegantly over the bottom of the image
+                                  bottom: 20,
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                     decoration: BoxDecoration(
-                                      color: AppTheme.primaryPurple.withOpacity(0.95), // Slight transparency
+                                      color: AppTheme.primaryPurple.withOpacity(0.95),
                                       borderRadius: BorderRadius.circular(30),
                                       boxShadow: [
                                         BoxShadow(
@@ -870,6 +879,8 @@ class _HomePageState extends State<HomePage> {
         required String title,
         required List<Widget> events,
       }) {
+    final bool isMobile = MediaQuery.of(context).size.width < 600;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -897,15 +908,19 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 24),
           ...events,
-          const Spacer(),
+          const Spacer(), // Pushes the button to the bottom
           const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
+
+          Align(
+            alignment: Alignment.center,
             child: OutlinedButton(
               onPressed: () => context.go('/schedule'),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppTheme.accentMagenta, width: 2),
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 32 : 40,
+                    vertical: 16
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),

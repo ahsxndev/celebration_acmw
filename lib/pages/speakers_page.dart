@@ -71,15 +71,15 @@ class SpeakersPage extends StatelessWidget {
                         size: CardSize.large,
                       ),
                     ),
+                    // KEYNOTE 2 - TO BE ANNOUNCED
                     _buildAdaptiveCard(
                       isMobile: isMobile,
                       width: keynoteCardWidth,
                       card: const UniversalProfileCard(
-                        name: "Dr. Kashif Shahzad",
-                        role: "CEO, Power Information Technology Company (PITC), Lahore, Pakistan",
+                        name: "Speaker To Be Announced",
+                        role: "Distinguished Guest Speaker",
                         topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
-                        profileUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
-                        imageUrl: "assets/images/persons/",
+                        imageUrl: "", // Triggers the fallback icon
                         tagText: "Keynote Speaker",
                         tagColor: AppTheme.accentMagenta,
                         size: CardSize.large,
@@ -184,14 +184,15 @@ class SpeakersPage extends StatelessWidget {
                         size: CardSize.small,
                       ),
                     ),
+                    // PANELIST 4 - TO BE ANNOUNCED
                     _buildAdaptiveCard(
                       isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
-                        name: "Dr. M. Ahmad Raza",
-                        role: "FAST NUCES, Lahore, Pakistan",
-                        imageUrl: "assets/images/persons/",
-                        profileUrl: "https://www.linkedin.com/in/muhammad-ahmad-raza-phd-b0949310",
+                        name: "Panelist To Be Announced",
+                        role: "Industry Expert",
+                        imageUrl: "", // Triggers the fallback icon
+                        tagColor: AppTheme.primaryPurple,
                         size: CardSize.small,
                       ),
                     ),

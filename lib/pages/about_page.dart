@@ -42,20 +42,20 @@ class _AboutPageState extends State<AboutPage>
                 const SectionHeader(title: "About ACM-W RCET"),
                 const SizedBox(height: 20),
 
-                // --- 1. OUR MISSION SECTION ---
+                // --- 1. OUR MISSION SECTION (FIXED IMAGE SIZE) ---
                 Flex(
                   direction: isDesktop ? Axis.horizontal : Axis.vertical,
-                  crossAxisAlignment: isDesktop
-                      ? CrossAxisAlignment.center
-                      : CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // TEXT SIDE
                     Expanded(
-                      flex: isDesktop ? 1 : 0,
+                      flex: isDesktop ? 6 : 0, // Favors the text slightly
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
                         children: [
                           Text(
                             "Our Mission",
+                            textAlign: isMobile ? TextAlign.center : TextAlign.left,
                             style: TextStyle(
                               fontSize: isMobile ? 22 : (isTablet ? 24 : 28),
                               fontWeight: FontWeight.bold,
@@ -65,6 +65,7 @@ class _AboutPageState extends State<AboutPage>
                           const SizedBox(height: 16),
                           Text(
                             "RCET UET ACM-W Student Chapter supports, celebrates, and advocates internationally for the full engagement of women in all aspects of the computing field. We aim to provide a wide range of programs and services to ACM members and work in the larger community to advance the contributions of technical women.",
+                            textAlign: isMobile ? TextAlign.center : TextAlign.left,
                             style: TextStyle(
                               fontSize: isMobile ? 14 : 16,
                               height: 1.6,
@@ -77,65 +78,70 @@ class _AboutPageState extends State<AboutPage>
                             curve: Curves.easeInOut,
                             child: _isExpanded
                                 ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        "Through the ACM-W RCET Chapter, we are creating a localized, empowering environment where students can network, learn from industry experts, and build the confidence to lead the future of technology.",
-                                        style: TextStyle(
-                                          fontSize: isMobile ? 14 : 16,
-                                          height: 1.6,
-                                          color: AppTheme.textDark.withOpacity(
-                                            0.8,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                              crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 16),
+                                Text(
+                                  "Through the ACM-W RCET Chapter, we are creating a localized, empowering environment where students can network, learn from industry experts, and build the confidence to lead the future of technology.",
+                                  textAlign: isMobile ? TextAlign.center : TextAlign.left,
+                                  style: TextStyle(
+                                    fontSize: isMobile ? 14 : 16,
+                                    height: 1.6,
+                                    color: AppTheme.textDark.withOpacity(
+                                      0.8,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                                 : const SizedBox.shrink(),
                           ),
 
                           const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _isExpanded = !_isExpanded;
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.accentMagenta,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 14,
+                          Align(
+                            alignment: isMobile ? Alignment.center : Alignment.centerLeft,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isExpanded = !_isExpanded;
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.accentMagenta,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 14,
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              _isExpanded ? "Show Less" : "Show More",
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              child: Text(
+                                _isExpanded ? "Show Less" : "Show More",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    if (isDesktop)
-                      const SizedBox(width: 60)
-                    else
-                      const SizedBox(height: 40),
 
+                    if (isDesktop) const SizedBox(width: 60) else const SizedBox(height: 40),
+
+                    // IMAGE SIDE
                     Expanded(
-                      flex: isDesktop ? 1 : 0,
-                      child: Container(
-                        height: 300,
-                        decoration: BoxDecoration(
-                          color: AppTheme.lightLavender,
-                          borderRadius: BorderRadius.circular(24),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/about_mission.png"),
-                            fit: BoxFit.cover,
+                      flex: isDesktop ? 4 : 0, // Shrunk to 4 to reduce size
+                      child: Center(
+                        child: ConstrainedBox(
+                          // Limits how large the image can get on any device
+                          constraints: BoxConstraints(maxWidth: isMobile ? 320 : 450),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Image.asset(
+                              "assets/images/about_mission.png",
+                              width: double.infinity,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ),
@@ -167,7 +173,7 @@ class _AboutPageState extends State<AboutPage>
 
                 // PERFECT ALIGNMENT LOGIC
                 if (isDesktop)
-                  // Desktop: Forces all cards in the row to be the exact same height
+                // Desktop: Forces all cards in the row to be the exact same height
                   IntrinsicHeight(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -202,7 +208,7 @@ class _AboutPageState extends State<AboutPage>
                     ),
                   )
                 else
-                  // Mobile: Stacks them vertically at 100% width so they don't look awkwardly wrapped
+                // Mobile: Stacks them vertically at 100% width so they don't look awkwardly wrapped
                   Column(
                     children: [
                       _buildHistoryNode(
@@ -253,7 +259,7 @@ class _AboutPageState extends State<AboutPage>
                       icon: Icons.people_alt_outlined,
                       title: "Networking",
                       description:
-                          "Connect with like-minded peers and industry professionals.",
+                      "Connect with like-minded peers and industry professionals.",
                       isMobile: isMobile,
                       mobileCardWidth: mobileCardWidth,
                     ),
@@ -261,7 +267,7 @@ class _AboutPageState extends State<AboutPage>
                       icon: Icons.lightbulb_outline,
                       title: "Learning",
                       description:
-                          "Gain hands-on experience through technical workshops.",
+                      "Gain hands-on experience through technical workshops.",
                       isMobile: isMobile,
                       mobileCardWidth: mobileCardWidth,
                     ),
@@ -269,7 +275,7 @@ class _AboutPageState extends State<AboutPage>
                       icon: Icons.rocket_launch_outlined,
                       title: "Empowerment",
                       description:
-                          "Build confidence and join a community that supports your growth.",
+                      "Build confidence and join a community that supports your growth.",
                       isMobile: isMobile,
                       mobileCardWidth: mobileCardWidth,
                     ),
@@ -288,12 +294,12 @@ class _AboutPageState extends State<AboutPage>
 
   // UPDATED HISTORY NODE
   Widget _buildHistoryNode(
-    String year,
-    String title,
-    String description,
-    bool isMobile, {
-    bool fullWidth = false,
-  }) {
+      String year,
+      String title,
+      String description,
+      bool isMobile, {
+        bool fullWidth = false,
+      }) {
     return Container(
       width: fullWidth
           ? double.infinity

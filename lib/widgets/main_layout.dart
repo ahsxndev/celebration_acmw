@@ -36,15 +36,18 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final bool isDesktop = width > 850;
-    final bool isCompactDesktop = width > 850 && width < 1150;
+
+    // FIX 1: Increased breakpoint from 850 to 1000 to prevent pixel overflow!
+    final bool isDesktop = width > 1000;
+    final bool isCompactDesktop = width > 1000 && width < 1200;
     final double headerHeight = width <= 375 ? 60.0 : 80.0;
 
     // DETERMINING THE NAVBAR STYLE
     final bool isHome = widget.activePage == 'Home';
 
+    // Slightly more opaque background when scrolled for better text contrast
     final Color navBgColor = !isHome || _isScrolled
-        ? AppTheme.white.withOpacity(0.9)
+        ? AppTheme.white.withOpacity(0.95)
         : Colors.transparent;
 
     final Color contentColor = !isHome || _isScrolled
@@ -174,8 +177,11 @@ class _MainLayoutState extends State<MainLayout> {
             ),
             child: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 250),
+              // FIX 2: Made text perfectly solid (opacity: 1.0) when scrolled so it is easy to read
               style: TextStyle(
-                color: isActive ? AppTheme.accentMagenta : textColor.withOpacity(0.9),
+                color: isActive
+                    ? AppTheme.accentMagenta
+                    : (_isScrolled ? textColor : textColor.withOpacity(0.9)),
                 fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                 fontSize: isCompact ? 13 : 15,
                 fontFamily: 'Montserrat',
@@ -227,31 +233,47 @@ class _MainLayoutState extends State<MainLayout> {
                 "ACM-W RCET",
                 style: TextStyle(
                   color: textColor,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                   fontSize: width <= 425 ? 15 : 20,
-                  height: 1.1, // Kept tight so it doesn't expand the appbar
+                  letterSpacing: -0.5,
+                  height: 1.1,
                 ),
               ),
               Text(
                 "Celebration",
                 style: TextStyle(
+                  // Solid color on scroll for readability
                   color: AppTheme.accentMagenta,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                   fontSize: width <= 425 ? 12 : 14,
+                  letterSpacing: 0.5,
                   height: 1.2,
                 ),
               ),
               const SizedBox(height: 2),
-              // ADDED DATE HERE (Modeled after HCIPAK)
-              Text(
-                "29-30 April, 2026",
-                style: TextStyle(
-                  color: textColor.withOpacity(0.85),
-                  fontWeight: FontWeight.w600,
-                  fontSize: width <= 425 ? 10 : 12,
-                  letterSpacing: 0.5,
-                  height: 1.1,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.calendar_month_rounded,
+                    size: width <= 425 ? 10 : 12,
+                    color: textColor,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    // FIX: Shrinks earlier (1100 instead of 375) to prevent breaking into the nav items
+                    width <= 1100
+                        ? "29-30 Apr • Gujranwala"
+                        : "29-30 April • Gujranwala, Pakistan",
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: width <= 425 ? 9 : 11,
+                      letterSpacing: 0.2,
+                      height: 1.1,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -307,7 +329,6 @@ class _MainLayoutState extends State<MainLayout> {
         child: Column(
           children: [
             Padding(
-              // REDUCED PADDING: Tighter top header
               padding: const EdgeInsets.fromLTRB(20, 16, 8, 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -323,7 +344,6 @@ class _MainLayoutState extends State<MainLayout> {
             Divider(color: Colors.grey.shade200, height: 1),
             Expanded(
               child: ListView(
-                // REDUCED PADDING: Tighter list view container
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 children: _routes.entries.map((entry) {
                   final isActive = widget.activePage == _activeKey(entry.key);
@@ -332,7 +352,6 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
             Padding(
-              // REDUCED PADDING: Tighter bottom button area
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: double.infinity,
@@ -343,7 +362,7 @@ class _MainLayoutState extends State<MainLayout> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.accentMagenta,
-                    padding: const EdgeInsets.symmetric(vertical: 14), // Reduced height
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -352,7 +371,7 @@ class _MainLayoutState extends State<MainLayout> {
                     "Register Now",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 15, // Slightly smaller text
+                      fontSize: 15,
                       color: Colors.white,
                     ),
                   ),
@@ -367,21 +386,19 @@ class _MainLayoutState extends State<MainLayout> {
 
   Widget _drawerItem(String title, String path, BuildContext context, bool isActive) {
     return Container(
-      // REDUCED MARGIN: Items sit closer together
       margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
         color: isActive ? AppTheme.lightLavender : Colors.transparent,
-        borderRadius: BorderRadius.circular(10), // Slightly sharper corners
+        borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        // ADDED: Compresses the ListTile significantly
         dense: true,
         visualDensity: VisualDensity.compact,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
         title: Text(
           title,
           style: TextStyle(
-            fontSize: 14, // REDUCED FONT SIZE
+            fontSize: 14,
             fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
             color: isActive ? AppTheme.primaryPurple : Colors.black87,
           ),

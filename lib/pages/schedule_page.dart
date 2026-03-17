@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../core/theme.dart';
 import '../widgets/global_footer.dart';
 import '../widgets/shared_components.dart';
@@ -33,6 +34,18 @@ class _SchedulePageState extends State<SchedulePage>
     super.dispose();
   }
 
+  // URL Launcher for clicking speaker names
+  Future<void> _launchURL(String? link) async {
+    if (link != null && link.isNotEmpty) {
+      final Uri url = Uri.parse(link);
+      try {
+        if (!await launchUrl(url)) debugPrint('Could not launch $url');
+      } catch (e) {
+        debugPrint('Error: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -40,7 +53,7 @@ class _SchedulePageState extends State<SchedulePage>
     final bool isTablet = screenWidth >= 600 && screenWidth <= 800;
     final double horizontalPadding = screenWidth > 800
         ? 80
-        : (isTablet ? 40 : 20);
+        : (isTablet ? 40 : 16); // Tighter padding for mobile
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -50,7 +63,7 @@ class _SchedulePageState extends State<SchedulePage>
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: horizontalPadding,
-              vertical: 40,
+              vertical: isMobile ? 24 : 40,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,10 +71,9 @@ class _SchedulePageState extends State<SchedulePage>
                 // --- HEADER ---
                 const SectionHeader(
                   title: "Event Schedule",
-                  subtitle:
-                      "Two days of networking, learning, and empowerment.",
+                  subtitle: "Two days of networking, learning, and empowerment.",
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: isMobile ? 20 : 40),
 
                 // --- PILL SHAPED TAB BAR ---
                 Container(
@@ -87,12 +99,10 @@ class _SchedulePageState extends State<SchedulePage>
                       ],
                     ),
                     labelColor: AppTheme.white,
-                    unselectedLabelColor: AppTheme.primaryPurple.withOpacity(
-                      0.7,
-                    ),
+                    unselectedLabelColor: AppTheme.primaryPurple.withOpacity(0.7),
                     labelStyle: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: isMobile ? 14 : 16,
+                      fontSize: isMobile ? 13 : 16, // Adjusted for mobile
                     ),
                     overlayColor: WidgetStateProperty.all(Colors.transparent),
                     tabs: const [
@@ -102,7 +112,7 @@ class _SchedulePageState extends State<SchedulePage>
                   ),
                 ),
 
-                const SizedBox(height: 50),
+                SizedBox(height: isMobile ? 30 : 50),
 
                 // --- TIMELINE CONTENT ---
                 Center(
@@ -119,7 +129,7 @@ class _SchedulePageState extends State<SchedulePage>
                   ),
                 ),
 
-                const SizedBox(height: 60),
+                SizedBox(height: isMobile ? 30 : 60),
               ],
             ),
           ),
@@ -129,7 +139,7 @@ class _SchedulePageState extends State<SchedulePage>
     );
   }
 
-  // --- DAY 1 SCHEDULE (Matches Image Exactly) ---
+  // --- DAY 1 SCHEDULE ---
   Widget _buildDay1() {
     return Column(
       key: const ValueKey("Day1"),
@@ -148,6 +158,9 @@ class _SchedulePageState extends State<SchedulePage>
           "09:30 - 10:45",
           "Keynote Talk 1",
           EventType.keynote,
+          topic: "She Leads the Future: Women Driving Innovation & Transformation in the Digital Age",
+          speakerName: "Dr. Kashif Shahzad",
+          speakerUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
         ),
         _buildProTimelineCard(
           "10:45 - 11:15",
@@ -156,8 +169,11 @@ class _SchedulePageState extends State<SchedulePage>
         ),
         _buildProTimelineCard(
           "11:15 - 12:45",
-          "Workshop 1 (Hands-on Technical Session)",
+          "Workshop 1",
           EventType.workshop,
+          topic: "She Builds with AI: A Hands-On Workshop on Generative AI Applications",
+          speakerName: "Dr. Sidra Zafar",
+          speakerUrl: "https://www.linkedin.com/in/sidra-zafar",
         ),
         _buildProTimelineCard(
           "12:45 - 01:45",
@@ -189,7 +205,7 @@ class _SchedulePageState extends State<SchedulePage>
     );
   }
 
-  // --- DAY 2 SCHEDULE (Matches Image Exactly) ---
+  // --- DAY 2 SCHEDULE ---
   Widget _buildDay2() {
     return Column(
       key: const ValueKey("Day2"),
@@ -203,6 +219,8 @@ class _SchedulePageState extends State<SchedulePage>
           "09:30 - 10:30",
           "Keynote Talk 2",
           EventType.keynote,
+          topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
+          speakerName: "Speaker To Be Announced",
         ),
         _buildProTimelineCard(
           "10:30 - 11:00",
@@ -211,8 +229,11 @@ class _SchedulePageState extends State<SchedulePage>
         ),
         _buildProTimelineCard(
           "11:00 - 12:30",
-          "Workshop 2 (Hands-on Technical Session)",
+          "Workshop 2",
           EventType.workshop,
+          topic: "Cybersecurity Essentials: Protecting the Digital World",
+          speakerName: "Mr. Usman Nazir",
+          speakerUrl: "https://thetasolutions.pk/our-core-team/",
         ),
         _buildProTimelineCard(
           "12:30 - 01:30",
@@ -244,13 +265,16 @@ class _SchedulePageState extends State<SchedulePage>
     );
   }
 
-  // --- PRO TIMELINE CARD DESIGN ---
+  // --- PRO TIMELINE CARD DESIGN (WITH SPEAKER INTEGRATION) ---
   Widget _buildProTimelineCard(
-    String time,
-    String title,
-    EventType type, {
-    bool isLast = false,
-  }) {
+      String time,
+      String title,
+      EventType type, {
+        bool isLast = false,
+        String? topic,
+        String? speakerName,
+        String? speakerUrl,
+      }) {
     // Styling based on event type
     Color primaryColor;
     Color bgColor;
@@ -295,54 +319,50 @@ class _SchedulePageState extends State<SchedulePage>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Left Side: The Connecting Line (Hidden on very small screens to save space)
-          if (!isMobile)
-            SizedBox(
-              width: 40,
-              child: Column(
-                children: [
-                  Container(
-                    width: 16,
-                    height: 16,
-                    margin: const EdgeInsets.only(top: 24),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryColor.withOpacity(0.4),
-                          blurRadius: 4,
-                        ),
-                      ],
+          // Left Side: The Connecting Line
+          // (Now visible on mobile but narrower to save space)
+          SizedBox(
+            width: isMobile ? 30 : 40,
+            child: Column(
+              children: [
+                Container(
+                  width: isMobile ? 12 : 16,
+                  height: isMobile ? 12 : 16,
+                  margin: EdgeInsets.only(top: isMobile ? 18 : 24),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: isMobile ? 2 : 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: primaryColor.withOpacity(0.4),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+                if (!isLast)
+                  Expanded(
+                    child: Container(
+                      width: 2,
+                      color: AppTheme.lightLavender.withOpacity(0.5),
                     ),
                   ),
-                  if (!isLast)
-                    Expanded(
-                      child: Container(
-                        width: 2,
-                        color: AppTheme.lightLavender.withOpacity(0.5),
-                      ),
-                    ),
-                ],
-              ),
+              ],
             ),
+          ),
 
           // Right Side: The Event Card
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: EdgeInsets.only(bottom: isMobile ? 12 : 20), // Tighter vertical spacing
               child: Container(
                 padding: EdgeInsets.all(isMobile ? 16 : 24),
                 decoration: BoxDecoration(
-                  color: type == EventType.breakTime
-                      ? Colors.grey.shade50
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  color: type == EventType.breakTime ? Colors.grey.shade50 : Colors.white,
+                  borderRadius: BorderRadius.circular(isMobile ? 16 : 20),
                   border: Border.all(
-                    color: type == EventType.breakTime
-                        ? Colors.grey.shade200
-                        : AppTheme.lightLavender,
+                    color: type == EventType.breakTime ? Colors.grey.shade200 : AppTheme.lightLavender.withOpacity(0.5),
                     width: 1.5,
                   ),
                   boxShadow: [
@@ -360,47 +380,91 @@ class _SchedulePageState extends State<SchedulePage>
                   children: [
                     // The Sleek Time Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: bgColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: primaryColor.withOpacity(0.2),
-                        ),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: primaryColor.withOpacity(0.2)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(icon, size: 16, color: primaryColor),
-                          const SizedBox(width: 8),
+                          Icon(icon, size: isMobile ? 14 : 16, color: primaryColor),
+                          const SizedBox(width: 6),
                           Text(
                             time,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: primaryColor,
-                              fontSize: 13,
+                              fontSize: isMobile ? 12 : 13,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+
                     // The Event Title
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize: isMobile ? 16 : 18,
-                        fontWeight: type == EventType.breakTime
-                            ? FontWeight.w600
-                            : FontWeight.bold,
-                        color: type == EventType.breakTime
-                            ? Colors.grey.shade600
-                            : AppTheme.primaryPurple,
+                        fontSize: isMobile ? 15 : 18,
+                        fontWeight: type == EventType.breakTime ? FontWeight.w600 : FontWeight.bold,
+                        color: type == EventType.breakTime ? Colors.grey.shade600 : AppTheme.primaryPurple,
                       ),
                     ),
+
+                    // The Topic (If applicable)
+                    if (topic != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        "Topic: $topic",
+                        style: TextStyle(
+                          fontSize: isMobile ? 13 : 15,
+                          fontStyle: FontStyle.italic,
+                          color: AppTheme.textDark.withOpacity(0.8),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+
+                    // The Clickable Speaker Name (If applicable)
+                    if (speakerName != null) ...[
+                      const SizedBox(height: 12),
+                      MouseRegion(
+                        cursor: speakerUrl != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                        child: GestureDetector(
+                          onTap: speakerUrl != null ? () => _launchURL(speakerUrl) : null,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                  Icons.person_rounded,
+                                  size: isMobile ? 16 : 18,
+                                  color: speakerUrl != null ? AppTheme.accentMagenta : Colors.grey.shade600
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  speakerName,
+                                  style: TextStyle(
+                                    fontSize: isMobile ? 13 : 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: speakerUrl != null ? AppTheme.accentMagenta : Colors.grey.shade700,
+                                    decoration: speakerUrl != null ? TextDecoration.underline : TextDecoration.none,
+                                    decorationColor: AppTheme.accentMagenta.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                              if (speakerUrl != null) ...[
+                                const SizedBox(width: 4),
+                                Icon(Icons.open_in_new_rounded, size: 12, color: AppTheme.accentMagenta.withOpacity(0.7)),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
