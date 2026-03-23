@@ -43,7 +43,7 @@ class OrganizersPage extends StatelessWidget {
                 // 1. CHAIRS SECTION
                 // ==========================================
                 Text(
-                  "Organizing Committee Chairs",
+                  "Program Committee",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: isMobile ? 24 : 32,
@@ -159,11 +159,12 @@ class OrganizersPage extends StatelessWidget {
                       imageUrl: "assets/images/volunteers/wafa.jpeg",
                       linkedinUrl: "https://www.linkedin.com/in/m-wafa-abbas-9abba1281",
                     ),
-                    _VolunteerAvatar(
-                      name: "Rejab Zahra",
-                      imageUrl: "assets/images/volunteers/rejab.jpeg",
-                      linkedinUrl: "https://www.linkedin.com/in/rejab-zahra-19377b320",
-                    ),
+
+                    // _VolunteerAvatar(
+                    //   name: "M. Mudasser",
+                    //   imageUrl: "assets/images/volunteers/mudassir.jpeg",
+                    //   linkedinUrl: "https://www.linkedin.com/in/muhammad-mudasser-b85a602b5?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+                    // ),
                     _VolunteerAvatar(
                       name: "Abdul Rehman",
                       imageUrl: "assets/images/volunteers/rehman.jpeg",
@@ -174,21 +175,22 @@ class OrganizersPage extends StatelessWidget {
                       imageUrl: "assets/images/volunteers/zaman.jpeg",
                       linkedinUrl: "https://www.linkedin.com/in/sheikhzaman-younis-652165311",
                     ),
+                    // _VolunteerAvatar(
+                    //   name: "Aden Butt",
+                    //   imageUrl: "assets/images/volunteers/aden.jpeg",
+                    //   linkedinUrl: "https://www.linkedin.com/in/aden-butt-7b1251252",
+                    // ),
                     _VolunteerAvatar(
-                      name: "Aden Butt",
-                      imageUrl: "assets/images/volunteers/aden.jpeg",
-                      linkedinUrl: "https://www.linkedin.com/in/aden-butt-7b1251252",
+                      name: "Rejab Zahra",
+                      imageUrl: "assets/images/volunteers/rejab.jpeg",
+                      linkedinUrl: "https://www.linkedin.com/in/rejab-zahra-19377b320",
                     ),
-                    _VolunteerAvatar(
-                      name: "M. Aqib Ali",
-                      imageUrl: "assets/images/volunteers/aqib.jpeg",
-                      linkedinUrl: "https://www.linkedin.com/in/muhammad-aqib-ali-0b95222b9",
-                    ),
-                    _VolunteerAvatar(
-                      name: "M. Mudassir",
-                      imageUrl: "assets/images/volunteers/mudassir.jpeg",
-                      linkedinUrl: "https://linkedin.com/in/username", // Placeholder
-                    ),
+                    // _VolunteerAvatar(
+                    //   name: "M. Aqib Ali",
+                    //   imageUrl: "assets/images/volunteers/aqib.jpeg",
+                    //   linkedinUrl: "https://www.linkedin.com/in/muhammad-aqib-ali-0b95222b9",
+                    // ),
+
                   ],
                 ),
                 const SizedBox(height: 60),

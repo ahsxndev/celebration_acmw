@@ -102,7 +102,7 @@ class SectionHeader extends StatelessWidget {
 }
 
 // ==========================================
-// 2. UNIVERSAL PROFILE CARD (WITH LINKEDIN BADGE)
+// 2. UNIVERSAL PROFILE CARD (DYNAMIC HEIGHT FIX)
 // ==========================================
 enum CardSize { large, regular, small }
 
@@ -113,8 +113,10 @@ class UniversalProfileCard extends StatelessWidget {
   final String imageUrl;
   final String? tagText;
   final Color? tagColor;
-  final String? profileUrl; // Opens when the whole card is clicked
-  final String? linkedinUrl; // ADDED: Opens when the small icon is clicked
+  final String? secondaryTagText;
+  final Color? secondaryTagColor;
+  final String? profileUrl;
+  final String? linkedinUrl;
   final CardSize size;
 
   const UniversalProfileCard({
@@ -125,8 +127,10 @@ class UniversalProfileCard extends StatelessWidget {
     required this.imageUrl,
     this.tagText,
     this.tagColor,
+    this.secondaryTagText,
+    this.secondaryTagColor,
     this.profileUrl,
-    this.linkedinUrl, // ADDED
+    this.linkedinUrl,
     this.size = CardSize.regular,
   });
 
@@ -147,10 +151,10 @@ class UniversalProfileCard extends StatelessWidget {
     final bool isMobile = screenWidth < 600;
 
     final double cardWidth = size == CardSize.large
-        ? (isMobile ? 260 : 300)
+        ? (isMobile ? 262 : 302)
         : size == CardSize.small
-        ? (isMobile ? 220 : 250)
-        : (isMobile ? 240 : 260);
+        ? (isMobile ? 222 : 252)
+        : (isMobile ? 242 : 262);
 
     final double imageSize = size == CardSize.large
         ? (isMobile ? 90 : 120)
@@ -163,16 +167,13 @@ class UniversalProfileCard extends StatelessWidget {
     final double roleFontSize = isMobile ? 11 : 14;
     final double cardPadding = isMobile ? 16 : 24;
 
-    double exactMobileHeight = 0;
-    if (isMobile) {
-      if (size == CardSize.large) exactMobileHeight = 342;
-      else if (size == CardSize.small) exactMobileHeight = 222;
-      else exactMobileHeight = 292;
-    }
+    // FIX: Removed the strict fixed heights that were causing pixel overflows on mobile.
+    // Instead of forcing a specific pixel height, we let the container naturally expand
+    // to fit the text, and use `mainAxisSize: MainAxisSize.max` to stretch evenly.
 
     Widget cardBody = Container(
       width: cardWidth,
-      height: isMobile ? exactMobileHeight : null,
+      // We do not set 'height' here anymore. It will be controlled by the parent row/wrap.
       padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         color: AppTheme.white,
@@ -190,14 +191,15 @@ class UniversalProfileCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max, // Tells column to take all available vertical space
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Pushes tags precisely to the bottom
         children: [
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // --- IMAGE WITH OPTIONAL BADGE ---
+              // --- IMAGE WITH ISOLATED BADGE BUTTON ---
               Stack(
+                clipBehavior: Clip.none,
                 alignment: Alignment.bottomRight,
                 children: [
                   Container(
@@ -212,25 +214,36 @@ class UniversalProfileCard extends StatelessWidget {
                     ),
                   ),
 
-                  // NEW: Badge Icon logic
+                  // Fixed tap area for LinkedIn Icon
                   if (linkedinUrl != null && linkedinUrl!.isNotEmpty)
-                    GestureDetector(
-                      onTap: () => _launchURL(linkedinUrl),
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Container(
-                          padding: EdgeInsets.all(isMobile ? 4 : 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2)),
-                            ],
+                    Positioned(
+                      bottom: -4,
+                      right: -4,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _launchURL(linkedinUrl),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: Container(
+                              padding: EdgeInsets.all(isMobile ? 5 : 7),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 3)
+                                  ),
+                                ],
+                              ),
+                              child: linkedinUrl!.contains('linkedin')
+                                  ? FaIcon(FontAwesomeIcons.linkedin, size: isMobile ? 15 : 18, color: const Color(0xFF0077B5))
+                                  : Icon(Icons.public_rounded, size: isMobile ? 15 : 18, color: AppTheme.primaryPurple),
+                            ),
                           ),
-                          // Smart Icon: Shows LinkedIn if URL contains 'linkedin', else shows a web icon (for Staff Links)
-                          child: linkedinUrl!.contains('linkedin')
-                              ? FaIcon(FontAwesomeIcons.linkedin, size: isMobile ? 14 : 16, color: const Color(0xFF0077B5))
-                              : Icon(Icons.public_rounded, size: isMobile ? 14 : 16, color: AppTheme.primaryPurple),
                         ),
                       ),
                     ),
@@ -238,7 +251,7 @@ class UniversalProfileCard extends StatelessWidget {
               ),
               // --------------------------------
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 name,
                 textAlign: TextAlign.center,
@@ -252,6 +265,7 @@ class UniversalProfileCard extends StatelessWidget {
               Text(
                 role,
                 textAlign: TextAlign.center,
+                // FIX: Removed maxLines and overflow. Text will naturally wrap and expand the card.
                 style: TextStyle(
                   color: AppTheme.textDark.withOpacity(0.7),
                   fontSize: roleFontSize,
@@ -300,25 +314,51 @@ class UniversalProfileCard extends StatelessWidget {
             ],
           ),
 
+          // STACKED TAGS
           if (tagText != null && tagColor != null)
             Padding(
-              // ADDED SPACE BEFORE THE TAG
               padding: const EdgeInsets.only(top: 16.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: tagColor,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  tagText!,
-                  style: TextStyle(
-                    color: AppTheme.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: isMobile ? 8 : 12,
-                    letterSpacing: 0.5,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: tagColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      tagText!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppTheme.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: isMobile ? 9 : 12,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                   ),
-                ),
+                  if (secondaryTagText != null && secondaryTagColor != null) ...[
+                    const SizedBox(height: 6), // Gap between stacked tags
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: secondaryTagColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        secondaryTagText!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppTheme.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: isMobile ? 9 : 12,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             )
           else
@@ -327,7 +367,6 @@ class UniversalProfileCard extends StatelessWidget {
       ),
     );
 
-    // Card background click logic
     if (profileUrl != null && profileUrl!.isNotEmpty) {
       return GestureDetector(
         onTap: () => _launchURL(profileUrl),

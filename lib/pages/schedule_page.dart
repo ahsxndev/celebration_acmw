@@ -154,13 +154,15 @@ class _SchedulePageState extends State<SchedulePage>
           "Opening Ceremony & Introduction to ACM-W",
           EventType.general,
         ),
+
         _buildProTimelineCard(
           "09:30 - 10:45",
           "Keynote Talk 1",
           EventType.keynote,
-          topic: "She Leads the Future: Women Driving Innovation & Transformation in the Digital Age",
-          speakerName: "Dr. Kashif Shahzad",
-          speakerUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
+          topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
+          speakerName: "Prof. Dr. Shazia Bashir",
+          speakerUrl: "https://gcwus.edu.pk/message-of-vice-chancellor/",
+
         ),
         _buildProTimelineCard(
           "10:45 - 11:15",
@@ -171,9 +173,9 @@ class _SchedulePageState extends State<SchedulePage>
           "11:15 - 12:45",
           "Workshop 1",
           EventType.workshop,
-          topic: "She Builds with AI: A Hands-On Workshop on Generative AI Applications",
-          speakerName: "Dr. Sidra Zafar",
-          speakerUrl: "https://www.linkedin.com/in/sidra-zafar",
+          topic: "Cybersecurity Essentials: Protecting the Digital World",
+          speakerName: "Mr. Usman Nazir",
+          speakerUrl: "https://thetasolutions.pk/our-core-team/",
         ),
         _buildProTimelineCard(
           "12:45 - 01:45",
@@ -219,8 +221,9 @@ class _SchedulePageState extends State<SchedulePage>
           "09:30 - 10:30",
           "Keynote Talk 2",
           EventType.keynote,
-          topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
-          speakerName: "Speaker To Be Announced",
+          topic: "She Leads the Future: Women Driving Innovation & Transformation in the Digital Age",
+          speakerName: "Dr. Kashif Shahzad",
+          speakerUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
         ),
         _buildProTimelineCard(
           "10:30 - 11:00",
@@ -231,9 +234,9 @@ class _SchedulePageState extends State<SchedulePage>
           "11:00 - 12:30",
           "Workshop 2",
           EventType.workshop,
-          topic: "Cybersecurity Essentials: Protecting the Digital World",
-          speakerName: "Mr. Usman Nazir",
-          speakerUrl: "https://thetasolutions.pk/our-core-team/",
+          topic: "She Builds with AI: A Hands-On Workshop on Generative AI Applications",
+          speakerName: "Dr. Sidra Zafar",
+          speakerUrl: "https://www.linkedin.com/in/sidra-zafar",
         ),
         _buildProTimelineCard(
           "12:30 - 01:30",
@@ -244,6 +247,7 @@ class _SchedulePageState extends State<SchedulePage>
           "01:30 - 02:30",
           "Panel Discussion",
           EventType.panel,
+          topic: "Women in Technology: Stories, Struggles & the Road to Diversity, Equity & Inclusion"
         ),
         _buildProTimelineCard(
           "02:30 - 03:30",

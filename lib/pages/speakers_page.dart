@@ -31,7 +31,7 @@ class SpeakersPage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(
               horizontal: horizontalPadding,
-              vertical: isMobile ? 20 : 40, // Reduced top padding on mobile
+              vertical: isMobile ? 20 : 40,
             ),
             child: Column(
               children: [
@@ -39,7 +39,6 @@ class SpeakersPage extends StatelessWidget {
                   title: "Meet Our Speakers & Experts",
                   subtitle: "Learn from industry leaders, panel experts, and hands-on workshop instructors.",
                 ),
-                // Reduced from 40
                 SizedBox(height: isMobile ? 10 : 20),
 
                 // --- 1. KEYNOTE SPEAKERS SECTION ---
@@ -57,6 +56,25 @@ class SpeakersPage extends StatelessWidget {
                   runSpacing: isMobile ? mobileSpacing : 30,
                   alignment: WrapAlignment.center,
                   children: [
+                    // KEYNOTE 2 - DR. SHAZIA WITH TWO TAGS
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
+                      width: keynoteCardWidth,
+                      card: const UniversalProfileCard(
+                        name: "Prof. Dr. Shazia Bashir",
+                        role: "Worthy Vice Chancellor, Government College Women University, Sialkot, Pakistan",
+                        imageUrl: "assets/images/persons/shazia.jpeg",
+                        profileUrl: "https://gcwus.edu.pk/message-of-vice-chancellor/",
+                        topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
+                        // Primary Tag - NOW GREEN
+                        tagText: "Distinguished Guest Speaker",
+                        tagColor: Colors.teal, // Changed to a nice green!
+                        // Secondary Tag
+                        secondaryTagText: "Keynote Speaker",
+                        secondaryTagColor: AppTheme.accentMagenta,
+                        size: CardSize.large,
+                      ),
+                    ),
                     _buildAdaptiveCard(
                       isMobile: isMobile,
                       width: keynoteCardWidth,
@@ -71,24 +89,12 @@ class SpeakersPage extends StatelessWidget {
                         size: CardSize.large,
                       ),
                     ),
-                    // KEYNOTE 2 - TO BE ANNOUNCED
-                    _buildAdaptiveCard(
-                      isMobile: isMobile,
-                      width: keynoteCardWidth,
-                      card: const UniversalProfileCard(
-                        name: "Speaker To Be Announced",
-                        role: "Distinguished Guest Speaker",
-                        topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
-                        imageUrl: "", // Triggers the fallback icon
-                        tagText: "Keynote Speaker",
-                        tagColor: AppTheme.accentMagenta,
-                        size: CardSize.large,
-                      ),
-                    ),
+
+                    // KEYNOTE 2 - DR. SHAZIA WITH TWO TAGS
+
                   ],
                 ),
 
-                // SIGNIFICANTLY REDUCED GAP (From 60 to 30)
                 SizedBox(height: isMobile ? 30 : 80),
 
                 // --- 2. WORKSHOP LEADS SECTION ---
@@ -135,19 +141,94 @@ class SpeakersPage extends StatelessWidget {
                   ],
                 ),
 
-                // SIGNIFICANTLY REDUCED GAP (From 60 to 30)
                 SizedBox(height: isMobile ? 30 : 80),
 
                 // --- 3. PANELISTS SECTION ---
                 Text(
-                  "Panelist Speakers",
+                  "Panelists",
                   style: TextStyle(
-                    fontSize: isMobile ? 22 : (isTablet ? 24 : 28),
+                    fontSize: isMobile ? 24 : 28,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryPurple,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
+                Center(
+                  child: Container(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    // Slightly smaller margins on mobile to give text more room
+                    margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 16 : 32,
+                      vertical: isMobile ? 20 : 28,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.lightLavender.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // 1. Thinner Vertical Bar for Mobile
+                          Container(
+                            width: isMobile ? 3 : 5,
+                            decoration: BoxDecoration(
+                              color: AppTheme.accentMagenta,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          // Tighter gap on mobile
+                          SizedBox(width: isMobile ? 12 : 24),
+
+                          // 2. Content Block
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "PANEL DISCUSSION",
+                                  style: TextStyle(
+                                    color: AppTheme.accentMagenta,
+                                    fontSize: isMobile ? 8 : 12,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      fontSize: isMobile ? 13 : 22,
+                                      height: 1.4,
+                                      color: AppTheme.primaryPurple,
+                                      fontFamily: 'Montserrat',
+                                    ),
+                                    children: [
+                                      const TextSpan(
+                                        text: "Women in Technology: ",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                        text: "Stories, Struggles & the Road to Diversity, Equity & Inclusion",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: AppTheme.textDark.withOpacity(0.8),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32), // Space before speaker cards
                 Wrap(
                   spacing: isMobile ? mobileSpacing : 24,
                   runSpacing: isMobile ? mobileSpacing : 32,
@@ -158,9 +239,11 @@ class SpeakersPage extends StatelessWidget {
                       width: cardWidth,
                       card: const UniversalProfileCard(
                         name: "Dr. M. Ahmad Raza",
-                        role: "FAST NUCES, Lahore, Pakistan",
+                        role: "Asst. Professor, FAST NUCES, Lahore, Pakistan",
                         imageUrl: "assets/images/persons/ahmad.jpeg",
                         profileUrl: "https://www.linkedin.com/in/muhammad-ahmad-raza-phd-b0949310",
+                        tagText: "Panelist",
+                        tagColor: AppTheme.primaryPurple,
                         size: CardSize.small,
                       ),
                     ),
@@ -171,6 +254,8 @@ class SpeakersPage extends StatelessWidget {
                         name: "Mr. Muhammad Umer",
                         role: "Sr. Software Engineer, Geopaq Logic, Irvine, Los Angeles, USA",
                         imageUrl: "assets/images/persons/umer.jpeg",
+                        tagText: "Panelist",
+                        tagColor: AppTheme.primaryPurple,
                         size: CardSize.small,
                       ),
                     ),
@@ -181,6 +266,8 @@ class SpeakersPage extends StatelessWidget {
                         name: "Ms. Shumaila Khaliq",
                         role: "Sr. Software Engineer, CU Direct, Irvine, Los Angeles, USA",
                         imageUrl: "assets/images/persons/shumaila.jpeg",
+                        tagText: "Panelist",
+                        tagColor: AppTheme.primaryPurple,
                         size: CardSize.small,
                       ),
                     ),
@@ -191,7 +278,8 @@ class SpeakersPage extends StatelessWidget {
                       card: const UniversalProfileCard(
                         name: "Panelist To Be Announced",
                         role: "Industry Expert",
-                        imageUrl: "", // Triggers the fallback icon
+                        imageUrl: "",
+                        tagText: "Panelist",
                         tagColor: AppTheme.primaryPurple,
                         size: CardSize.small,
                       ),
@@ -219,7 +307,7 @@ class SpeakersPage extends StatelessWidget {
       ),
     );
 
-    if (isMobile) return scaled; // No IntrinsicHeight on mobile
-    return IntrinsicHeight(child: scaled); // Keep it for desktop alignment
+    if (isMobile) return scaled;
+    return IntrinsicHeight(child: scaled);
   }
 }

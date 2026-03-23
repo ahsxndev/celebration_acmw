@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../core/theme.dart';
 
 class MainLayout extends StatefulWidget {
@@ -17,35 +16,27 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   bool _isScrolled = false;
 
+  // FIX: Added 'Registration' between Schedule and Organizers
   static const Map<String, String> _routes = {
     'Home': '/',
     'About': '/about',
     'Speakers': '/speakers',
     'Schedule': '/schedule',
+    'Registration': '/registration',
     'Organizers': '/organizers',
     'Contact': '/contact',
   };
-
-  Future<void> _launchRegistrationForm() async {
-    final Uri url = Uri.parse('https://forms.gle/JGSNx1k6qg2APABa7');
-    if (!await launchUrl(url)) {
-      debugPrint('Could not launch $url');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    // FIX 1: Increased breakpoint from 850 to 1000 to prevent pixel overflow!
     final bool isDesktop = width > 1000;
     final bool isCompactDesktop = width > 1000 && width < 1200;
     final double headerHeight = width <= 375 ? 60.0 : 80.0;
 
-    // DETERMINING THE NAVBAR STYLE
     final bool isHome = widget.activePage == 'Home';
 
-    // Slightly more opaque background when scrolled for better text contrast
     final Color navBgColor = !isHome || _isScrolled
         ? AppTheme.white.withOpacity(0.95)
         : Colors.transparent;
@@ -95,6 +86,7 @@ class _MainLayoutState extends State<MainLayout> {
                   padding: EdgeInsets.only(left: width <= 375 ? 16 : 32),
                   child: _buildAnimatedLogo(isCompactDesktop, width, contentColor),
                 ),
+                // FIX: Removed the Register button from the desktop actions
                 actions: isDesktop
                     ? [
                   ..._routes.keys.map(
@@ -105,10 +97,6 @@ class _MainLayoutState extends State<MainLayout> {
                       isCompact: isCompactDesktop,
                       textColor: contentColor,
                     ),
-                  ),
-                  SizedBox(width: isCompactDesktop ? 8 : 16),
-                  Center(
-                    child: _buildRegisterButton(isCompactDesktop, context),
                   ),
                   SizedBox(width: isCompactDesktop ? 12 : 24),
                 ]
@@ -177,7 +165,6 @@ class _MainLayoutState extends State<MainLayout> {
             ),
             child: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 250),
-              // FIX 2: Made text perfectly solid (opacity: 1.0) when scrolled so it is easy to read
               style: TextStyle(
                 color: isActive
                     ? AppTheme.accentMagenta
@@ -242,7 +229,6 @@ class _MainLayoutState extends State<MainLayout> {
               Text(
                 "Celebration",
                 style: TextStyle(
-                  // Solid color on scroll for readability
                   color: AppTheme.accentMagenta,
                   fontWeight: FontWeight.bold,
                   fontSize: width <= 425 ? 12 : 14,
@@ -250,74 +236,9 @@ class _MainLayoutState extends State<MainLayout> {
                   height: 1.2,
                 ),
               ),
-              const SizedBox(height: 2),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.calendar_month_rounded,
-                    size: width <= 425 ? 10 : 12,
-                    color: textColor,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    // FIX: Shrinks earlier (1100 instead of 375) to prevent breaking into the nav items
-                    width <= 1100
-                        ? "29-30 Apr • Gujranwala"
-                        : "29-30 April • Gujranwala, Pakistan",
-                    style: TextStyle(
-                      color: textColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: width <= 425 ? 9 : 11,
-                      letterSpacing: 0.2,
-                      height: 1.1,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildRegisterButton(bool isCompact, BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: _isScrolled
-            ? [
-          BoxShadow(
-            color: AppTheme.accentMagenta.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ]
-            : [],
-      ),
-      child: ElevatedButton(
-        onPressed: _launchRegistrationForm,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.accentMagenta,
-          elevation: 0,
-          padding: EdgeInsets.symmetric(
-            horizontal: isCompact ? 16 : 24,
-            vertical: isCompact ? 14 : 18,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: Text(
-          "Register Now",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: isCompact ? 13 : 15,
-            color: Colors.white,
-          ),
-        ),
       ),
     );
   }
@@ -342,6 +263,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
             Divider(color: Colors.grey.shade200, height: 1),
+            // FIX: Removed the bottom Register padding from the Drawer
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -349,33 +271,6 @@ class _MainLayoutState extends State<MainLayout> {
                   final isActive = widget.activePage == _activeKey(entry.key);
                   return _drawerItem(entry.key, entry.value, context, isActive);
                 }).toList(),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _launchRegistrationForm();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accentMagenta,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: const Text(
-                    "Register Now",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
               ),
             ),
           ],

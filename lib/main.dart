@@ -8,6 +8,7 @@ import 'pages/speakers_page.dart';
 import 'pages/schedule_page.dart';
 import 'pages/organizers_page.dart';
 import 'pages/contact_page.dart';
+import 'pages/registration_page.dart'; // NEW IMPORT
 
 void main() {
   // Use path-based URLs (removes the '#' from web URLs)
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
           if (state.fullPath == '/about') active = 'About';
           if (state.fullPath == '/speakers') active = 'Speakers';
           if (state.fullPath == '/schedule') active = 'Schedule';
+          if (state.fullPath == '/registration') active = 'Registration'; // NEW
           if (state.fullPath == '/organizers') active = 'Organizers';
           if (state.fullPath == '/contact') active = 'Contact';
 
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 300),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
-                      FadeTransition(opacity: animation, child: child),
+                  FadeTransition(opacity: animation, child: child),
             ),
           ),
           GoRoute(
@@ -55,7 +57,7 @@ class MyApp extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 300),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
-                      FadeTransition(opacity: animation, child: child),
+                  FadeTransition(opacity: animation, child: child),
             ),
           ),
           GoRoute(
@@ -66,7 +68,7 @@ class MyApp extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 300),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
-                      FadeTransition(opacity: animation, child: child),
+                  FadeTransition(opacity: animation, child: child),
             ),
           ),
           GoRoute(
@@ -77,7 +79,19 @@ class MyApp extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 300),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
-                      FadeTransition(opacity: animation, child: child),
+                  FadeTransition(opacity: animation, child: child),
+            ),
+          ),
+          // NEW REGISTRATION ROUTE
+          GoRoute(
+            path: '/registration',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const RegistrationPage(),
+              transitionDuration: const Duration(milliseconds: 300),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                  FadeTransition(opacity: animation, child: child),
             ),
           ),
           GoRoute(
@@ -88,7 +102,7 @@ class MyApp extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 300),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
-                      FadeTransition(opacity: animation, child: child),
+                  FadeTransition(opacity: animation, child: child),
             ),
           ),
           GoRoute(
@@ -99,7 +113,7 @@ class MyApp extends StatelessWidget {
               transitionDuration: const Duration(milliseconds: 300),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
-                      FadeTransition(opacity: animation, child: child),
+                  FadeTransition(opacity: animation, child: child),
             ),
           ),
         ],
@@ -114,7 +128,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       scrollBehavior: const MaterialScrollBehavior().copyWith(scrollbars: true),
-      routerConfig: _router, // Use the router configuration
+      routerConfig: _router,
     );
   }
 }

@@ -86,10 +86,13 @@ class GlobalFooter extends StatelessWidget {
             children: [
               _buildHeading("Contact Us"),
               _footerText("RCET UET ACM-W Student Chapter"),
-              _footerText("Rachna College of Engineering and Technology,\nGujranwala, Punjab"),
               const SizedBox(height: 8),
-              _footerText("Phone: +92 309 7072739"),
-              _footerText("Email: acmwrcetchapter@gmail.com"),
+
+              // Icons and Text
+              _footerTextWithIcon(Icons.location_on_rounded, "Rachna College of Engineering and Technology,\nGujranwala, Pakistan"),
+              _footerTextWithIcon(Icons.phone_rounded, "+92 309 7072739"),
+              _footerTextWithIcon(Icons.email_rounded, "acmwrcetchapter@gmail.com"),
+
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -113,8 +116,8 @@ class GlobalFooter extends StatelessWidget {
               _footerLink(context, "» About", "/about"),
               _footerLink(context, "» Speakers", "/speakers"),
               _footerLink(context, "» Schedule", "/schedule"),
+              _footerLink(context, "» Registration", "/registration"),
               _footerLink(context, "» Organizers", "/organizers"),
-              _footerLink(context, "» Contact", "/contact"),
             ],
           ),
         ),
@@ -133,7 +136,7 @@ class GlobalFooter extends StatelessWidget {
   }
 
   // ==========================================
-  // MOBILE LAYOUT (FIXED TEXT WRAPPING)
+  // MOBILE LAYOUT
   // ==========================================
   Widget _buildMobileLayout(BuildContext context) {
     return Column(
@@ -149,19 +152,25 @@ class GlobalFooter extends StatelessWidget {
         const SizedBox(height: 20),
         const Text(
             "RCET UET ACM-W Student Chapter",
-            textAlign: TextAlign.center, // Ensures it stays centered if it wraps
+            textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)
         ),
-        const SizedBox(height: 8),
-        _footerTextCentered("Rachna College of Engineering and Technology\nGujranwala, Punjab"),
-        const SizedBox(height: 12),
-
-        // FIXED: Split email and phone into two separate lines so they never wrap awkwardly!
-        _footerTextCentered("Email: acmwrcetchapter@gmail.com"),
-        const SizedBox(height: 4),
-        _footerTextCentered("Phone: +92 309 7072739"),
-
         const SizedBox(height: 24),
+
+        // FIX: Left-Aligned Contact Block, centered on the mobile screen
+        Container(
+          constraints: const BoxConstraints(maxWidth: 300), // Bounded width keeps it looking compact and neat
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // Forces icons into a perfect straight vertical line
+            children: [
+              _footerTextWithIcon(Icons.location_on_rounded, "Rachna College of Engineering and Technology,\nGujranwala, Pakistan"),
+              _footerTextWithIcon(Icons.email_rounded, "acmwrcetchapter@gmail.com"),
+              _footerTextWithIcon(Icons.phone_rounded, "+92 309 7072739"),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -184,8 +193,8 @@ class GlobalFooter extends StatelessWidget {
             _footerLink(context, "About", "/about"),
             _footerLink(context, "Speakers", "/speakers"),
             _footerLink(context, "Schedule", "/schedule"),
+            _footerLink(context, "Registration", "/registration"),
             _footerLink(context, "Organizers", "/organizers"),
-            _footerLink(context, "Contact", "/contact"),
           ],
         ),
 
@@ -220,8 +229,28 @@ class GlobalFooter extends StatelessWidget {
     );
   }
 
-  Widget _footerTextCentered(String text) {
-    return Text(text, textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13, height: 1.4));
+  // FIX: This unified widget now perfectly handles both Desktop and Mobile formatting!
+  Widget _footerTextWithIcon(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // Aligns icon to the top line of text
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0), // Tiny nudge to align icon center with first text line
+            child: Icon(icon, color: AppTheme.accentMagenta, size: 16),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            // Expanded forces the text to wrap cleanly at the edge of the screen/container
+            child: Text(
+                text,
+                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14, height: 1.4)
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _footerLink(BuildContext context, String text, String route) {

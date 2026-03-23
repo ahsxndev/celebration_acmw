@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               SizedBox(
                 width: double.infinity,
-                height: isMobile ? 550 : (isTablet ? 600 : 650),
+                height: isMobile ? 650 : (isTablet ? 650 : 700),
                 child: PageView.builder(
                   controller: _pageController,
                   onPageChanged: (index) => setState(() => _currentPage = index),
@@ -168,7 +168,8 @@ class _HomePageState extends State<HomePage> {
               ),
               Positioned.fill(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  // FIX: Increased horizontal padding heavily on mobile (55) to prevent text from touching the arrows
+                  padding: EdgeInsets.symmetric(horizontal: isMobile ? 55 : horizontalPadding),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -192,6 +193,20 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white.withOpacity(0.85),
                         ),
                       ),
+                      const SizedBox(height: 16),
+
+                      // FIX: Simple bold text as requested
+                      Text(
+                        "Rachna College of Engineering & Technology (RCET),\nGujranwala, Pakistan",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isMobile ? 14 : (isTablet ? 16 : 18),
+                          fontWeight: FontWeight.bold, // Simple Bold
+                          color: Colors.white,
+                          height: 1.3,
+                        ),
+                      ),
+
                       const SizedBox(height: 32),
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -207,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         child: Text(
-                          "April 29-30",
+                          "April 29-30, 2026",
                           style: TextStyle(
                             color: AppTheme.white,
                             fontWeight: FontWeight.bold,
@@ -277,7 +292,7 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // ==========================================
-          // 2. NEW: EVENT INTRODUCTION (TEXT BG FIXED)
+          // 2. EVENT INTRODUCTION (UPDATED CONTENT)
           // ==========================================
           Container(
             width: double.infinity,
@@ -298,12 +313,11 @@ class _HomePageState extends State<HomePage> {
                   direction: isDesktop ? Axis.horizontal : Axis.vertical,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // LEFT SIDE: IMAGE (Size reduced and controlled)
+                    // LEFT SIDE: IMAGE
                     Expanded(
-                      flex: isDesktop ? 4 : 0, // Reduced from 5 to 4 to give text more focus
+                      flex: isDesktop ? 4 : 0,
                       child: Center(
                         child: Container(
-                          // Limits how large the image can get on all devices
                           constraints: BoxConstraints(maxWidth: isMobile ? 300 : 400),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
@@ -318,7 +332,7 @@ class _HomePageState extends State<HomePage> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20),
                             child: Image.asset(
-                              "assets/images/about_2.png",
+                              "assets/images/about_2.jpeg",
                               width: double.infinity,
                               fit: BoxFit.cover,
                             ),
@@ -329,9 +343,9 @@ class _HomePageState extends State<HomePage> {
 
                     if (isDesktop) const SizedBox(width: 40) else const SizedBox(height: 40),
 
-                    // RIGHT SIDE: TEXT
+                    // RIGHT SIDE: UPDATED TEXT
                     Expanded(
-                      flex: isDesktop ? 7 : 0, // Kept text wider
+                      flex: isDesktop ? 7 : 0,
                       child: Container(
                         padding: EdgeInsets.all(isMobile ? 24 : 40),
                         decoration: BoxDecoration(
@@ -346,32 +360,31 @@ class _HomePageState extends State<HomePage> {
                               height: 1.8,
                               color: AppTheme.textDark.withOpacity(0.85),
                             ),
-                            children: const [
-                              TextSpan(text: "The "),
-                              TextSpan(
-                                text: "ACM-W Celebrations of Women in Computing (RCETCWIC 2026) ",
+                            children: [
+                              const TextSpan(text: "The "),
+                              const TextSpan(
+                                text: "RCET Celebration of Women in Computing (RCETCWIC 2026) ",
                                 style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryPurple),
                               ),
-                              TextSpan(
-                                  text: "is designed to provide an empowering and immersive experience for students, professionals, and tech enthusiasts interested in the ever-evolving field of computing.\n\n"
+                              const TextSpan(
+                                  text: "is a flagship event for women in computing, designed to provide an empowering and immersive experience for students, professionals, and tech enthusiasts in the ever-evolving field of computing.\n\n"
                               ),
-                              TextSpan(
-                                  text: "The event will feature a series of inspiring keynote talks, hands-on technical workshops, and interactive panel discussions, covering key topics such as "
+                              const TextSpan(
+                                  text: "The event will feature inspiring keynote talks, hands-on technical workshops, and interactive panel discussions, covering key areas such as "
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text: "Artificial Intelligence, Cybersecurity, Smart Energy Systems, and Women in Tech Leadership",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              TextSpan(
-                                  text: ". Participants will gain both theoretical insights and practical skills, enabling them to innovate and lead in the modern tech industry.\n\n"
+                              const TextSpan(
+                                  text: ".\n\n"
                               ),
-                              TextSpan(text: "This year, "),
-                              TextSpan(
+                              const TextSpan(
                                 text: "RCETCWIC 2026 ",
                                 style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryPurple),
                               ),
-                              TextSpan(
-                                  text: "will offer attendees the opportunity to network with industry experts, collaborate with peers, and explore real-world applications of emerging technologies while actively fostering diversity, equity, and inclusion in computing."
+                              const TextSpan(
+                                  text: "will also offer opportunities to network with industry experts, collaborate with peers, and explore real-world applications of emerging technologies, enabling participants to innovate and lead while fostering diversity and inclusion in computing."
                               ),
                             ],
                           ),
@@ -386,7 +399,7 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // ==========================================
-          // 3. ABOUT SNIPPET SECTION (SIZE & RATIO FIXED)
+          // 3. ABOUT SNIPPET SECTION (IMAGE SHRUNK)
           // ==========================================
           Container(
             color: AppTheme.primaryPurple,
@@ -398,9 +411,9 @@ class _HomePageState extends State<HomePage> {
               direction: isDesktop ? Axis.horizontal : Axis.vertical,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // TEXT SIDE
+                // TEXT SIDE (Increased flex for more prominence)
                 Expanded(
-                  flex: isDesktop ? 6 : 0, // Increased text ratio slightly
+                  flex: isDesktop ? 7 : 0,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -449,20 +462,24 @@ class _HomePageState extends State<HomePage> {
 
                 if (isDesktop) const SizedBox(width: 60) else const SizedBox(height: 40),
 
-                // IMAGE SIDE (Size reduced and controlled)
+                // IMAGE SIDE (Further shrunk for mobile/small screens)
                 Expanded(
-                  flex: isDesktop ? 4 : 0, // Shrunk the image flex
+                  flex: isDesktop ? 3 : 0,
                   child: Center(
-                    child: Container(
-                      // Hard constraint so the illustration doesn't explode on wide screens or tall mobile screens
-                      constraints: BoxConstraints(maxWidth: isMobile ? 320 : 450),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: Image.asset(
-                          "assets/images/about_mission.png",
-                          width: double.infinity,
-                          // Contain ensures the graphic fits perfectly without awkward cropping
-                          fit: BoxFit.contain,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: isMobile ? 20 : 0), // Adds a gap when stacked on mobile
+                      child: Container(
+                        // Reduced maxWidth for mobile to 220 for a much smaller look
+                        constraints: BoxConstraints(
+                          maxWidth: isMobile ? 220 : 380,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: Image.asset(
+                            "assets/images/about_mission.png",
+                            width: double.infinity,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),
@@ -485,62 +502,71 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: isMobile ? 20 : 40),
 
-                Wrap(
-                  spacing: isMobile ? mobileSpacing : 24,
-                  runSpacing: isMobile ? 20 : 24,
-                  alignment: WrapAlignment.center,
+                Column(
                   children: [
                     _buildAdaptiveCard(
                       isMobile: isMobile,
-                      width: speakerCardWidth,
+                      width: isMobile ? (screenWidth * 0.75) : 320,
                       card: const UniversalProfileCard(
-                        name: "Dr. Kashif Shahzad",
-                        role: "CEO, Power Information Technology Company (PITC), Lahore, Pakistan",
-                        imageUrl: "assets/images/persons/kashif.png",
-                        profileUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
-                        tagText: "Keynote Speaker",
-                        tagColor: AppTheme.accentMagenta,
-                        size: CardSize.small,
+                        name: "Prof. Dr. Shazia Bashir",
+                        role: "Worthy Vice Chancellor, Government College Women University, Sialkot, Pakistan",
+                        imageUrl: "assets/images/persons/shazia.jpeg",
+                        profileUrl: "https://gcwus.edu.pk/message-of-vice-chancellor/",
+                        tagText: "Distinguished Guest Speaker",
+                        tagColor: Colors.teal,
+                        secondaryTagText: "Keynote Speaker",
+                        secondaryTagColor: AppTheme.accentMagenta,
+                        size: CardSize.large,
                       ),
                     ),
-                    _buildAdaptiveCard(
-                      isMobile: isMobile,
-                      width: speakerCardWidth,
-                      card: UniversalProfileCard(
-                        name: "Dr. Sidra Zafar",
-                        role: "Head of Computer Science, Kinnaird College, Lahore, Pakistan",
-                        imageUrl: "assets/images/persons/sidra.jpeg",
-                        profileUrl: "https://www.linkedin.com/in/sidra-zafar?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
-                        tagText: "Workshop Lead",
-                        tagColor: Colors.teal.shade600,
-                        size: CardSize.small,
-                      ),
-                    ),
-                    _buildAdaptiveCard(
-                      isMobile: isMobile,
-                      width: speakerCardWidth,
-                      card: const UniversalProfileCard(
-                        name: "Dr. M. Ahmad Raza",
-                        role: "FAST NUCES, Lahore, Pakistan",
-                        imageUrl: "assets/images/persons/ahmad.jpeg",
-                        profileUrl: "https://www.linkedin.com/in/muhammad-ahmad-raza-phd-b0949310?utm_source=share_via&utm_content=profile&utm_medium=member_android",
-                        tagText: "Panelist",
-                        tagColor: AppTheme.primaryPurple,
-                        size: CardSize.small,
-                      ),
-                    ),
-                    _buildAdaptiveCard(
-                      isMobile: isMobile,
-                      width: speakerCardWidth,
-                      card: UniversalProfileCard(
-                        name: "Mr. Usman Nazir",
-                        role: "CEO, Theta Solutions, Sialkot, Pakistan",
-                        imageUrl: "assets/images/persons/usman.jpg",
-                        profileUrl: "https://thetasolutions.pk/our-core-team/",
-                        tagText: "Workshop Lead",
-                        tagColor: Colors.teal.shade600,
-                        size: CardSize.small,
-                      ),
+
+                    SizedBox(height: isMobile ? 24 : 40),
+
+                    Wrap(
+                      spacing: isMobile ? mobileSpacing : 24,
+                      runSpacing: isMobile ? 20 : 24,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _buildAdaptiveCard(
+                          isMobile: isMobile,
+                          width: speakerCardWidth,
+                          card: const UniversalProfileCard(
+                            name: "Dr. Kashif Shahzad",
+                            role: "CEO, Power Information Technology Company (PITC), Lahore, Pakistan",
+                            imageUrl: "assets/images/persons/kashif.png",
+                            profileUrl: "https://www.pitc.com.pk/index.php/about/board-of-directors",
+                            tagText: "Keynote Speaker",
+                            tagColor: AppTheme.accentMagenta,
+                            size: CardSize.small,
+                          ),
+                        ),
+                        _buildAdaptiveCard(
+                          isMobile: isMobile,
+                          width: speakerCardWidth,
+                          card: UniversalProfileCard(
+                            name: "Dr. Sidra Zafar",
+                            role: "Head of Computer Science, Kinnaird College, Lahore, Pakistan",
+                            imageUrl: "assets/images/persons/sidra.jpeg",
+                            profileUrl: "https://www.linkedin.com/in/sidra-zafar?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+                            tagText: "Workshop Lead",
+                            tagColor: Colors.teal.shade600,
+                            size: CardSize.small,
+                          ),
+                        ),
+                        _buildAdaptiveCard(
+                          isMobile: isMobile,
+                          width: speakerCardWidth,
+                          card: const UniversalProfileCard(
+                            name: "Dr. M. Ahmad Raza",
+                            role: "Asst. Professor, FAST NUCES, Lahore, Pakistan",
+                            imageUrl: "assets/images/persons/ahmad.jpeg",
+                            profileUrl: "https://www.linkedin.com/in/muhammad-ahmad-raza-phd-b0949310?utm_source=share_via&utm_content=profile&utm_medium=member_android",
+                            tagText: "Panelist",
+                            tagColor: AppTheme.primaryPurple,
+                            size: CardSize.small,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
