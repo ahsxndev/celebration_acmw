@@ -7,7 +7,6 @@ A modern, immersive, and fully responsive cross-platform web application built t
    
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 </div>
 
 <img width="1440" height="966" alt="RCETCWIC Desktop Banner" src="https://github.com/user-attachments/assets/02b57bb1-616c-4b9d-8e0e-5b7bccd75b9d"  />
