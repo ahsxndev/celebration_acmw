@@ -276,9 +276,9 @@ class SpeakersPage extends StatelessWidget {
                       isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
-                        name: "Panelist To Be Announced",
-                        role: "Industry Expert",
-                        imageUrl: "",
+                        name: "Rabia Arshad",
+                        role: "System Analyst Designation, BISE Lahore",
+                        imageUrl: "assets/images/persons/rabia.jpeg",
                         tagText: "Panelist",
                         tagColor: AppTheme.primaryPurple,
                         size: CardSize.small,
