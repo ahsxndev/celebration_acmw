@@ -271,13 +271,13 @@ class SpeakersPage extends StatelessWidget {
                         size: CardSize.small,
                       ),
                     ),
-                    // PANELIST 4 - TO BE ANNOUNCED
+                    // PANELIST 4 
                     _buildAdaptiveCard(
                       isMobile: isMobile,
                       width: cardWidth,
                       card: const UniversalProfileCard(
                         name: "Ms. Rabia Arshad",
-                        role: "System Analyst, BISE Lahore, Pakistan",
+                        role: "System Analyst\nBISE Lahore, Pakistan",
                         imageUrl: "assets/images/persons/rabia.jpeg",
                         tagText: "Panelist",
                         tagColor: AppTheme.primaryPurple,
