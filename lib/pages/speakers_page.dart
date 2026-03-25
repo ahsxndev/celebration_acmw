@@ -271,7 +271,7 @@ class SpeakersPage extends StatelessWidget {
                         size: CardSize.small,
                       ),
                     ),
-                    // PANELIST 4 
+                    // PANELIST 4
                     _buildAdaptiveCard(
                       isMobile: isMobile,
                       width: cardWidth,

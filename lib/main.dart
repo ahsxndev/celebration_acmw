@@ -8,6 +8,7 @@ import 'pages/speakers_page.dart';
 import 'pages/schedule_page.dart';
 import 'pages/organizers_page.dart';
 import 'pages/contact_page.dart';
+import 'pages/registration_page.dart';
 
 void main() {
   // Use path-based URLs (removes the '#' from web URLs)
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
           if (state.fullPath == '/about') active = 'About';
           if (state.fullPath == '/speakers') active = 'Speakers';
           if (state.fullPath == '/schedule') active = 'Schedule';
+          if (state.fullPath == '/registration') active = 'Registration';
           if (state.fullPath == '/organizers') active = 'Organizers';
           if (state.fullPath == '/contact') active = 'Contact';
 
@@ -74,6 +76,17 @@ class MyApp extends StatelessWidget {
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
               child: const SchedulePage(),
+              transitionDuration: const Duration(milliseconds: 300),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) =>
+                      FadeTransition(opacity: animation, child: child),
+            ),
+          ),
+          GoRoute(
+            path: '/registration',
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const RegistrationPage(),
               transitionDuration: const Duration(milliseconds: 300),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) =>
