@@ -504,23 +504,23 @@ class _HomePageState extends State<HomePage> {
 
                 Column(
                   children: [
-                    _buildAdaptiveCard(
-                      isMobile: isMobile,
-                      width: isMobile ? (screenWidth * 0.75) : 320,
-                      card: const UniversalProfileCard(
-                        name: "Prof. Dr. Shazia Bashir",
-                        role: "Worthy Vice Chancellor, Government College Women University, Sialkot, Pakistan",
-                        imageUrl: "assets/images/persons/shazia.jpeg",
-                        profileUrl: "https://gcwus.edu.pk/message-of-vice-chancellor/",
-                        tagText: "Distinguished Guest Speaker",
-                        tagColor: Colors.teal,
-                        secondaryTagText: "Keynote Speaker",
-                        secondaryTagColor: AppTheme.accentMagenta,
-                        size: CardSize.large,
-                      ),
-                    ),
-
-                    SizedBox(height: isMobile ? 24 : 40),
+                    // _buildAdaptiveCard(
+                    //   isMobile: isMobile,
+                    //   width: isMobile ? (screenWidth * 0.75) : 320,
+                    //   card: const UniversalProfileCard(
+                    //     name: "Prof. Dr. Shazia Bashir",
+                    //     role: "Worthy Vice Chancellor, Government College Women University, Sialkot, Pakistan",
+                    //     imageUrl: "assets/images/persons/shazia.jpeg",
+                    //     profileUrl: "https://gcwus.edu.pk/message-of-vice-chancellor/",
+                    //     tagText: "Distinguished Guest Speaker",
+                    //     tagColor: Colors.teal,
+                    //     secondaryTagText: "Keynote Speaker",
+                    //     secondaryTagColor: AppTheme.accentMagenta,
+                    //     size: CardSize.large,
+                    //   ),
+                    // ),
+                    //
+                    // SizedBox(height: isMobile ? 24 : 40),
 
                     Wrap(
                       spacing: isMobile ? mobileSpacing : 24,

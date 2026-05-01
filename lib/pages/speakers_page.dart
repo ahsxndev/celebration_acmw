@@ -56,25 +56,6 @@ class SpeakersPage extends StatelessWidget {
                   runSpacing: isMobile ? mobileSpacing : 30,
                   alignment: WrapAlignment.center,
                   children: [
-                    // KEYNOTE 2 - DR. SHAZIA WITH TWO TAGS
-                    _buildAdaptiveCard(
-                      isMobile: isMobile,
-                      width: keynoteCardWidth,
-                      card: const UniversalProfileCard(
-                        name: "Prof. Dr. Shazia Bashir",
-                        role: "Worthy Vice Chancellor, Government College Women University, Sialkot, Pakistan",
-                        imageUrl: "assets/images/persons/shazia.jpeg",
-                        profileUrl: "https://gcwus.edu.pk/message-of-vice-chancellor/",
-                        topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
-                        // Primary Tag - NOW GREEN
-                        tagText: "Distinguished Guest Speaker",
-                        tagColor: Colors.teal, // Changed to a nice green!
-                        // Secondary Tag
-                        secondaryTagText: "Keynote Speaker",
-                        secondaryTagColor: AppTheme.accentMagenta,
-                        size: CardSize.large,
-                      ),
-                    ),
                     _buildAdaptiveCard(
                       isMobile: isMobile,
                       width: keynoteCardWidth,
@@ -90,7 +71,39 @@ class SpeakersPage extends StatelessWidget {
                       ),
                     ),
 
-                    // KEYNOTE 2 - DR. SHAZIA WITH TWO TAGS
+                    _buildAdaptiveCard(
+                      isMobile: isMobile,
+                      width: keynoteCardWidth,
+                      card: const UniversalProfileCard(
+                        name: "Dr. Natasha Nigar",
+                        role: "Assistant Professor, UET RCET, Gujranwala, Pakistan",
+                        imageUrl: "assets/images/persons/natasha.png",
+                        profileUrl: "https://staff.uet.edu.pk/profile/973",
+                        topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
+                        tagText: "Keynote Speaker",
+                        tagColor: AppTheme.accentMagenta,
+                        size: CardSize.large,
+                      ),
+                    ),
+
+                    // _buildAdaptiveCard(
+                    //   isMobile: isMobile,
+                    //   width: keynoteCardWidth,
+                    //   card: const UniversalProfileCard(
+                    //     name: "Prof. Dr. Shazia Bashir",
+                    //     role: "Worthy Vice Chancellor, Government College Women University, Sialkot, Pakistan",
+                    //     imageUrl: "assets/images/persons/shazia.jpeg",
+                    //     profileUrl: "https://gcwus.edu.pk/message-of-vice-chancellor/",
+                    //     topic: "From Bias to Breakthrough: Dismantling Barriers for Women in Computing",
+                    //     // Primary Tag - NOW GREEN
+                    //     tagText: "Distinguished Guest Speaker",
+                    //     tagColor: Colors.teal, // Changed to a nice green!
+                    //     // Secondary Tag
+                    //     secondaryTagText: "Keynote Speaker",
+                    //     secondaryTagColor: AppTheme.accentMagenta,
+                    //     size: CardSize.large,
+                    //   ),
+                    // ),
 
                   ],
                 ),
